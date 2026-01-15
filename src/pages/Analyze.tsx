@@ -369,8 +369,9 @@ export default function Analyze() {
                   return (
                     <div
                       key={persona.id}
+                      onClick={() => togglePersona(persona.id)}
                       className={cn(
-                        "w-full text-left p-4 rounded-xl border-2 transition-all",
+                        "w-full text-left p-4 rounded-xl border-2 transition-all cursor-pointer",
                         isSelected ? "border-primary bg-primary/5" : "border-border hover:border-primary/50",
                       )}
                     >
@@ -382,15 +383,14 @@ export default function Analyze() {
                               <span className="font-semibold">{persona.name}</span>
                               <span className="text-sm text-muted-foreground">{persona.age}</span>
                             </div>
-                            <button
-                              onClick={() => togglePersona(persona.id)}
+                            <div
                               className={cn(
                                 "w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all",
-                                isSelected ? "border-primary bg-primary" : "border-muted-foreground hover:border-primary",
+                                isSelected ? "border-primary bg-primary" : "border-muted-foreground",
                               )}
                             >
                               {isSelected && <Check className="h-3 w-3 text-primary-foreground" />}
-                            </button>
+                            </div>
                           </div>
                           <p className="text-sm text-muted-foreground mt-1">{persona.description}</p>
                           <div className="flex items-center justify-between mt-2">
