@@ -166,7 +166,7 @@ export default function Loading() {
   }
 
   return (
-    <div className='min-h-screen bg-black flex flex-col items-center justify-center p-8 relative overflow-hidden'>
+    <div className='min-h-screen bg-gradient-radial flex flex-col items-center justify-center p-8 relative overflow-hidden'>
       {/* X-ray scan effect */}
       <div
         className='absolute top-0 left-0 w-full h-full pointer-events-none'

@@ -1,7 +1,7 @@
 import type { DragEvent, ChangeEvent } from 'react';
 import { useState, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Eye, Upload, ArrowLeft, Monitor, Smartphone, Tablet, Check, Info } from 'lucide-react';
+import { Eye, Upload, ArrowLeft, Monitor, Smartphone, Tablet, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useAnalysisStore } from '@/store/analysis';
@@ -271,13 +271,19 @@ export default function Analyze() {
                     key={persona.id}
                     onClick={() => !isDisabled && togglePersona(persona.id)}
                     className={cn(
-                      'cursor-pointer text-center p-7 rounded-2xl transition-all backdrop-blur-xl border-2 relative',
+                      'cursor-pointer text-center p-7 rounded-2xl backdrop-blur-xl border relative',
+                      'transition-all duration-300 ease-out',
                       isDisabled
                         ? 'bg-white/5 border-white/10 cursor-not-allowed opacity-50'
                         : isSelected
-                        ? 'bg-white/20 border-white shadow-xl'
-                        : 'bg-white/5 border-white/30 hover:bg-white/10 hover:border-white/50'
+                        ? 'bg-white/10 border-white/60 shadow-[0_0_30px_rgba(255,255,255,0.15)] scale-[1.02]'
+                        : 'bg-white/5 border-white/20 hover:bg-white/8 hover:border-white/40 hover:scale-[1.01] hover:shadow-[0_0_20px_rgba(255,255,255,0.1)]'
                     )}
+                    style={{
+                      ...(isSelected && !isDisabled ? {
+                        background: 'linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.05) 100%)',
+                      } : {})
+                    }}
                   >
                     {/* Mobile/Tablet only badge */}
                     {isOneHandPersona && (
@@ -292,14 +298,15 @@ export default function Analyze() {
                         src={persona.image}
                         alt={persona.name}
                         className={cn(
-                          'w-32 h-32 mx-auto object-cover rounded-full',
-                          isDisabled && 'grayscale'
+                          'w-32 h-32 mx-auto object-cover rounded-full transition-all duration-300',
+                          isDisabled && 'grayscale',
+                          isSelected && !isDisabled && 'ring-2 ring-white/50 ring-offset-2 ring-offset-transparent'
                         )}
                       />
                     </div>
                     <div
                       className={cn(
-                        'text-lg font-bold mb-2',
+                        'text-lg font-bold mb-2 transition-colors duration-300',
                         isDisabled ? 'text-gray-500' : 'text-white'
                       )}
                     >
@@ -307,7 +314,7 @@ export default function Analyze() {
                     </div>
                     <div
                       className={cn(
-                        'text-sm mb-3 px-2 leading-relaxed',
+                        'text-sm mb-3 px-2 leading-relaxed transition-colors duration-300',
                         isDisabled ? 'text-gray-600' : 'text-white/80'
                       )}
                     >
@@ -318,7 +325,7 @@ export default function Analyze() {
                         <span
                           key={tag}
                           className={cn(
-                            'text-sm px-2.5 py-1 rounded-full',
+                            'text-sm px-2.5 py-1 rounded-full transition-colors duration-300',
                             isDisabled ? 'bg-white/5 text-gray-600' : 'bg-white/15 text-white/90'
                           )}
                         >
@@ -329,18 +336,13 @@ export default function Analyze() {
                     <button
                       onClick={(e) => handleDetailClick(e, persona)}
                       className={cn(
-                        'text-sm hover:underline flex items-center gap-1 mx-auto',
+                        'text-sm hover:underline flex items-center gap-1 mx-auto transition-colors duration-300',
                         isDisabled ? 'text-gray-600' : 'text-gray-300 hover:text-white'
                       )}
                     >
                       <Info className='h-4 w-4' />
                       자세히 보기
                     </button>
-                    {isSelected && !isDisabled && (
-                      <div className='mt-3 flex justify-center'>
-                        <Check className='h-6 w-6 text-white' />
-                      </div>
-                    )}
                   </div>
                 );
               })}

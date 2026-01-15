@@ -200,9 +200,9 @@ export default function Results() {
   }
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-gradient-radial">
       {/* Header */}
-      <header className="border-b border-white/10 bg-black/95 backdrop-blur sticky top-0 z-50">
+      <header className="border-b border-white/10 bg-black/50 backdrop-blur-xl sticky top-0 z-50">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <Link to="/" className="flex items-center gap-2">
             <Eye className="h-6 w-6 text-white" />
@@ -231,7 +231,7 @@ export default function Results() {
         </div>
       </header>
 
-      <main className="container mx-auto py-4 px-4 bg-black">
+      <main className="container mx-auto py-4 px-4">
         <div className="grid lg:grid-cols-2 gap-6">
           {/* Left: Image with Red Pen */}
           <div>
@@ -526,11 +526,95 @@ export default function Results() {
                       <p className="text-xs text-gray-400">{activePersona.feedback.length}개의 문제 발견</p>
                     </div>
                   </div>
-                  <div className="text-right bg-white/5 px-4 py-2 rounded-lg border border-white/10">
-                    <p className="text-[10px] text-gray-400 uppercase tracking-wide mb-0.5">점수</p>
-                    <p className={cn("text-3xl font-bold tabular-nums", getScoreColor(activePersona.score))}>
-                      {activePersona.score}
-                    </p>
+                  <div className="flex items-center gap-3">
+                    {/* Ability Toggle - Emphasized */}
+                    {activePersona.name.includes('할머니') && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className={cn(
+                          "gap-2 transition-all duration-300",
+                          enableElderlyVision
+                            ? "bg-purple-500 hover:bg-purple-600 text-white border-purple-500 shadow-[0_0_20px_rgba(168,85,247,0.4)]"
+                            : "bg-purple-500/20 border-purple-500/50 text-purple-300 hover:bg-purple-500/30 hover:border-purple-500 animate-pulse"
+                        )}
+                        onClick={() => {
+                          setEnableElderlyVision(!enableElderlyVision)
+                          setEnableBlindSpot(false)
+                          setEnableLocalBlocker(false)
+                          setEnableThumbZone(false)
+                        }}
+                      >
+                        👵 노안 시뮬레이터
+                      </Button>
+                    )}
+                    {(activePersona.name.includes('이혁준') || activePersona.name.includes('대리')) && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className={cn(
+                          "gap-2 transition-all duration-300",
+                          enableBlindSpot
+                            ? "bg-gray-600 hover:bg-gray-500 text-white border-gray-600 shadow-[0_0_20px_rgba(107,114,128,0.4)]"
+                            : "bg-gray-500/20 border-gray-500/50 text-gray-300 hover:bg-gray-500/30 hover:border-gray-500 animate-pulse"
+                        )}
+                        onClick={() => {
+                          setEnableBlindSpot(!enableBlindSpot)
+                          setEnableElderlyVision(false)
+                          setEnableLocalBlocker(false)
+                          setEnableThumbZone(false)
+                        }}
+                      >
+                        📱 블라인드 스팟
+                      </Button>
+                    )}
+                    {(activePersona.name.includes('Brian') || activePersona.name.includes('미국인')) && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className={cn(
+                          "gap-2 transition-all duration-300",
+                          enableLocalBlocker
+                            ? "bg-red-500 hover:bg-red-600 text-white border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.4)]"
+                            : "bg-red-500/20 border-red-500/50 text-red-300 hover:bg-red-500/30 hover:border-red-500 animate-pulse"
+                        )}
+                        onClick={() => {
+                          setEnableLocalBlocker(!enableLocalBlocker)
+                          setEnableElderlyVision(false)
+                          setEnableBlindSpot(false)
+                          setEnableThumbZone(false)
+                        }}
+                      >
+                        🌏 로컬 블로커
+                      </Button>
+                    )}
+                    {(activePersona.name.includes('김민석') || activePersona.name.includes('취준생')) && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className={cn(
+                          "gap-2 transition-all duration-300",
+                          enableThumbZone
+                            ? "bg-orange-500 hover:bg-orange-600 text-white border-orange-500 shadow-[0_0_20px_rgba(249,115,22,0.4)]"
+                            : "bg-orange-500/20 border-orange-500/50 text-orange-300 hover:bg-orange-500/30 hover:border-orange-500 animate-pulse"
+                        )}
+                        onClick={() => {
+                          setEnableThumbZone(!enableThumbZone)
+                          setEnableElderlyVision(false)
+                          setEnableBlindSpot(false)
+                          setEnableLocalBlocker(false)
+                        }}
+                      >
+                        🚌 Thumb Zone
+                      </Button>
+                    )}
+                    {/* Score */}
+                    <div className="text-right bg-white/5 px-4 py-2 rounded-lg border border-white/10">
+                      <p className="text-[10px] text-gray-400 uppercase tracking-wide mb-0.5">점수</p>
+                      <p className={cn("text-3xl font-bold tabular-nums", getScoreColor(activePersona.score))}>
+                        {activePersona.score}
+                      </p>
+                    </div>
                   </div>
                 </div>
 
@@ -541,102 +625,6 @@ export default function Results() {
                     style={{ width: `${activePersona.score}%` }}
                   />
                 </div>
-
-                {/* Elderly Vision Simulator Toggle - Only for Grandmother */}
-                {activePersona.name.includes('할머니') && (
-                  <div className="mb-4">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className={cn(
-                        "w-full gap-2",
-                        enableElderlyVision
-                          ? "bg-purple-500 hover:bg-purple-600 text-white border-purple-500"
-                          : "bg-white/5 border-white/20 text-white hover:bg-white/10"
-                      )}
-                      onClick={() => {
-                        setEnableElderlyVision(!enableElderlyVision)
-                        setEnableBlindSpot(false)
-                        setEnableLocalBlocker(false)
-                        setEnableThumbZone(false)
-                      }}
-                    >
-                      👵 노안 시뮬레이터 {enableElderlyVision ? 'OFF' : 'ON'}
-                    </Button>
-                  </div>
-                )}
-
-                {/* Blind Spot Simulator Toggle - Only for ADHD */}
-                {(activePersona.name.includes('이혁준') || activePersona.name.includes('대리')) && (
-                  <div className="mb-4">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className={cn(
-                        "w-full gap-2",
-                        enableBlindSpot
-                          ? "bg-gray-700 hover:bg-gray-600 text-white border-gray-700"
-                          : "bg-white/5 border-white/20 text-white hover:bg-white/10"
-                      )}
-                      onClick={() => {
-                        setEnableBlindSpot(!enableBlindSpot)
-                        setEnableElderlyVision(false)
-                        setEnableLocalBlocker(false)
-                        setEnableThumbZone(false)
-                      }}
-                    >
-                      📱 블라인드 스팟 {enableBlindSpot ? 'OFF' : 'ON'}
-                    </Button>
-                  </div>
-                )}
-
-                {/* Local Blocker Toggle - Only for Foreigner */}
-                {(activePersona.name.includes('Brian') || activePersona.name.includes('미국인')) && (
-                  <div className="mb-4">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className={cn(
-                        "w-full gap-2",
-                        enableLocalBlocker
-                          ? "bg-red-500 hover:bg-red-600 text-white border-red-500"
-                          : "bg-white/5 border-white/20 text-white hover:bg-white/10"
-                      )}
-                      onClick={() => {
-                        setEnableLocalBlocker(!enableLocalBlocker)
-                        setEnableElderlyVision(false)
-                        setEnableBlindSpot(false)
-                        setEnableThumbZone(false)
-                      }}
-                    >
-                      🌏 로컬 블로커 {enableLocalBlocker ? 'OFF' : 'ON'}
-                    </Button>
-                  </div>
-                )}
-
-                {/* Thumb Zone Toggle - Only for One-Hand User */}
-                {(activePersona.name.includes('김민석') || activePersona.name.includes('취준생')) && (
-                  <div className="mb-6">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className={cn(
-                        "w-full gap-2",
-                        enableThumbZone
-                          ? "bg-orange-500 hover:bg-orange-600 text-white border-orange-500"
-                          : "bg-white/5 border-white/20 text-white hover:bg-white/10"
-                      )}
-                      onClick={() => {
-                        setEnableThumbZone(!enableThumbZone)
-                        setEnableElderlyVision(false)
-                        setEnableBlindSpot(false)
-                        setEnableLocalBlocker(false)
-                      }}
-                    >
-                      🚌 Thumb Zone {enableThumbZone ? 'OFF' : 'ON'}
-                    </Button>
-                  </div>
-                )}
 
                 {/* Feedback List */}
                 <div className="space-y-2">
