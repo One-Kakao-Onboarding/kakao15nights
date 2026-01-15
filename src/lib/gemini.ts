@@ -129,8 +129,8 @@ const personaPrompts: Record<string, string> = {
 const personaInfo: Record<string, { name: string; emoji: string }> = {
   grandmother: { name: '김복심 할머니', emoji: '👵' },
   adhd: { name: '이혁준 대리', emoji: '📱' },
-  'one-hand': { name: '김민석', emoji: '🚌' },
-  foreigner: { name: 'Brian', emoji: '🌏' },
+  'one-hand': { name: '김민석 취준생', emoji: '🚌' },
+  foreigner: { name: 'Brian 여행객', emoji: '🌏' },
 };
 
 export interface Coordinate {

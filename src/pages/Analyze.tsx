@@ -26,7 +26,7 @@ const personas = [
   {
     id: "one-hand",
     emoji: "🚌",
-    name: "김민석",
+    name: "김민석 취준생",
     age: "25세",
     description: "한 손 조작 사용자",
     tags: ["도달성", "오작동방지", "모바일최적화"],
@@ -34,7 +34,7 @@ const personas = [
   {
     id: "foreigner",
     emoji: "🌏",
-    name: "Brian",
+    name: "Brian 여행객",
     age: "40세",
     description: "글로벌/외국인 사용자",
     tags: ["현지화", "웹표준", "접근성"],
@@ -45,6 +45,11 @@ const devices = [
   { id: "mobile", icon: Smartphone, label: "Mobile" },
   { id: "tablet", icon: Tablet, label: "Tablet" },
   { id: "desktop", icon: Monitor, label: "Desktop" },
+]
+
+const demoImages = [
+  { id: "daum", path: "/demo_daum.png", name: "다음", description: "데모 • 모바일 앱" },
+  { id: "naver", path: "/demo_naver.png", name: "네이버", description: "데모 • 모바일 앱" },
 ]
 
 export default function Analyze() {
@@ -82,6 +87,21 @@ export default function Analyze() {
         setUploadedImage(reader.result as string, file)
       }
       reader.readAsDataURL(file)
+    }
+  }, [setUploadedImage])
+
+  const handleDemoSelect = useCallback(async (demoPath: string, demoName: string) => {
+    try {
+      const response = await fetch(demoPath)
+      const blob = await response.blob()
+      const reader = new FileReader()
+      reader.onload = () => {
+        const file = new File([blob], demoName, { type: blob.type })
+        setUploadedImage(reader.result as string, file)
+      }
+      reader.readAsDataURL(blob)
+    } catch (error) {
+      console.error("Failed to load demo image:", error)
     }
   }, [setUploadedImage])
 
@@ -172,6 +192,41 @@ export default function Analyze() {
                     </div>
                   )}
                 </div>
+
+                {/* Demo Images */}
+                {!uploadedImage && (
+                  <div className="mt-4">
+                    <div className="text-center mb-3">
+                      <p className="text-sm text-muted-foreground">또는 데모 이미지로 빠르게 시작하기</p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      {demoImages.map((demo) => (
+                        <button
+                          key={demo.id}
+                          onClick={() => handleDemoSelect(demo.path, demo.name)}
+                          className="group relative overflow-hidden rounded-lg border-2 border-border hover:border-primary transition-all"
+                        >
+                          <img
+                            src={demo.path}
+                            alt={demo.name}
+                            className="w-full h-24 object-cover object-top group-hover:scale-105 transition-transform"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2.5">
+                            <div className="text-left w-full">
+                              <div className="flex items-center justify-between">
+                                <p className="text-white font-semibold text-sm">{demo.name}</p>
+                                <span className="text-xs px-2 py-0.5 rounded-full bg-primary text-primary-foreground font-medium">
+                                  데모
+                                </span>
+                              </div>
+                              <p className="text-white/80 text-xs mt-0.5">{demo.description}</p>
+                            </div>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Device Selection */}
