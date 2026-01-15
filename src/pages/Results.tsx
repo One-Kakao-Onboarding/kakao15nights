@@ -14,6 +14,7 @@ export default function Results() {
   const [activeFeedbackIndex, setActiveFeedbackIndex] = useState(0)
   const pdfReportRef = useRef<HTMLDivElement>(null)
   const [isExporting, setIsExporting] = useState(false)
+  const [enableElderlyVision, setEnableElderlyVision] = useState(false)
 
   useEffect(() => {
     if (!results) {
@@ -26,9 +27,34 @@ export default function Results() {
     setActiveFeedbackIndex(0)
   }, [activePersonaIndex])
 
+  useEffect(() => {
+    if (enableElderlyVision) {
+      const grandmotherIndex = results?.personas.findIndex(p => p.name.includes('할머니'))
+      if (grandmotherIndex !== undefined && grandmotherIndex !== -1) {
+        setActivePersonaIndex(grandmotherIndex)
+      }
+    }
+  }, [enableElderlyVision, results])
+
   const handleNewAnalysis = () => {
     reset()
     navigate("/analyze")
+  }
+
+  const getBlurSeverity = (coord: { x: number; y: number; width: number; height: number }, feedback: string) => {
+    const area = coord.width * coord.height
+    let baseSeverity = 2
+
+    if (area < 0.005) baseSeverity = 4
+    else if (area < 0.02) baseSeverity = 3
+    else if (area < 0.05) baseSeverity = 2
+    else baseSeverity = 1.5
+
+    if (feedback.includes('작') || feedback.includes('깨알')) baseSeverity += 1
+    if (feedback.includes('흐릿') || feedback.includes('보이') || feedback.includes('글씨')) baseSeverity += 0.5
+    if (feedback.includes('텍스트')) baseSeverity += 0.3
+
+    return Math.min(baseSeverity, 5)
   }
 
   const handleExportPDF = async () => {
@@ -180,8 +206,29 @@ export default function Results() {
                   alt="Analyzed UI"
                   className="w-full rounded-lg"
                 />
+
+                {/* Elderly Vision Simulator Overlays */}
+                {enableElderlyVision && activePersona && activePersona.name.includes('할머니') && (
+                  <div className="absolute inset-0 pointer-events-none rounded-lg overflow-hidden">
+                    {activePersona.coordinates.map((coord, idx) => (
+                      <div
+                        key={`blur-${idx}`}
+                        className="absolute transition-all duration-300"
+                        style={{
+                          top: `${coord.y * 100}%`,
+                          left: `${coord.x * 100}%`,
+                          width: `${coord.width * 100}%`,
+                          height: `${coord.height * 100}%`,
+                          backdropFilter: `blur(${getBlurSeverity(coord, activePersona.feedback[idx])}px) contrast(${0.9 - getBlurSeverity(coord, activePersona.feedback[idx]) * 0.05}) brightness(1.1)`,
+                          WebkitBackdropFilter: `blur(${getBlurSeverity(coord, activePersona.feedback[idx])}px) contrast(${0.9 - getBlurSeverity(coord, activePersona.feedback[idx]) * 0.05}) brightness(1.1)`,
+                        }}
+                      />
+                    ))}
+                  </div>
+                )}
+
                 {/* Red Pen Overlay */}
-                {activeCoordinate && (
+                {activeCoordinate && !enableElderlyVision && (
                   <div
                     className="absolute border-2 border-red-500 bg-red-500/10 rounded transition-all duration-300"
                     style={{
@@ -198,30 +245,45 @@ export default function Results() {
                 )}
               </div>
 
+              {/* Elderly Vision Info */}
+              {enableElderlyVision && activePersona?.name.includes('할머니') && (
+                <div className="mt-4 p-3 bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800 rounded-lg">
+                  <p className="text-sm text-purple-900 dark:text-purple-100 flex items-center gap-2">
+                    <span className="text-lg">👁️</span>
+                    <span>
+                      <strong>노안 시뮬레이터 활성화:</strong> 75세 고령층의 시각으로 화면을 보고 있습니다.
+                      작은 텍스트일수록 더 흐리게 표현됩니다.
+                    </span>
+                  </p>
+                </div>
+              )}
+
               {/* Feedback Navigation */}
-              <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={activeFeedbackIndex === 0}
-                  onClick={() => setActiveFeedbackIndex((prev) => prev - 1)}
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                  이전 문제
-                </Button>
-                <span className="text-sm text-muted-foreground">
-                  {activeFeedbackIndex + 1} / {activePersona?.feedback.length || 0}
-                </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={activeFeedbackIndex >= (activePersona?.feedback.length || 1) - 1}
-                  onClick={() => setActiveFeedbackIndex((prev) => prev + 1)}
-                >
-                  다음 문제
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
+              {!enableElderlyVision && (
+                <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={activeFeedbackIndex === 0}
+                    onClick={() => setActiveFeedbackIndex((prev) => prev - 1)}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    이전 문제
+                  </Button>
+                  <span className="text-sm text-muted-foreground">
+                    {activeFeedbackIndex + 1} / {activePersona?.feedback.length || 0}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={activeFeedbackIndex >= (activePersona?.feedback.length || 1) - 1}
+                    onClick={() => setActiveFeedbackIndex((prev) => prev + 1)}
+                  >
+                    다음 문제
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
 
@@ -272,6 +334,20 @@ export default function Results() {
                     style={{ width: `${activePersona.score}%` }}
                   />
                 </div>
+
+                {/* Elderly Vision Simulator Toggle - Only for Grandmother */}
+                {activePersona.name.includes('할머니') && (
+                  <div className="mb-6">
+                    <Button
+                      variant={enableElderlyVision ? "default" : "outline"}
+                      size="sm"
+                      className="w-full gap-2"
+                      onClick={() => setEnableElderlyVision(!enableElderlyVision)}
+                    >
+                      👵 노안 시뮬레이터 {enableElderlyVision ? 'ON' : 'OFF'}
+                    </Button>
+                  </div>
+                )}
 
                 {/* Feedback List */}
                 <div className="space-y-3">
