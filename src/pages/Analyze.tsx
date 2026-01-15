@@ -16,6 +16,7 @@ import {
 interface PersonaDetail {
   id: string
   emoji: string
+  image: string
   name: string
   age: string
   description: string
@@ -33,6 +34,7 @@ const personasData: PersonaDetail[] = [
   {
     id: "grandmother",
     emoji: "👵",
+    image: "/personaA.png",
     name: "디지털 취약계층 김복심 할머니",
     age: "75세",
     description: "노안으로 작은 글씨를 읽기 힘들고, 디지털 기기 조작에 서투른 고령층 사용자",
@@ -55,6 +57,7 @@ const personasData: PersonaDetail[] = [
   {
     id: "adhd",
     emoji: "📱",
+    image: "/personaB.png",
     name: "참을성이 부족한 이혁준 대리",
     age: "32세",
     description: "ADHD 성향으로 참을성이 부족하고, 트렌디한 UI를 선호하는 MZ세대",
@@ -76,6 +79,7 @@ const personasData: PersonaDetail[] = [
   {
     id: "one-hand",
     emoji: "🚌",
+    image: "/personaC.png",
     name: "한 손 조작 사용자 김민석",
     age: "25세",
     description: "만원 지하철에서 한 손으로만 스마트폰을 조작하는 취준생",
@@ -99,6 +103,7 @@ const personasData: PersonaDetail[] = [
   {
     id: "foreigner",
     emoji: "🌏",
+    image: "/personaD.png",
     name: "미국인 Brian",
     age: "40세",
     description: "한국어를 전혀 모르고 브라우저 번역에 의존하는 미국인 여행객",
@@ -110,9 +115,9 @@ const personasData: PersonaDetail[] = [
       "로컬 UX의 늪: 본인인증(휴대폰/아이핀), 도로명 주소 검색, Active X 기반 결제 등 한국 특화 프로세스에서 길을 잃음",
     ],
     ability: {
-      title: "고유 능력: 레이아웃 파괴 및 장벽 맵",
+      title: "고유 능력: 로컬 장벽 맵",
       description:
-        "한국어 UI 시안을 입력하면, 영문/다국어 변환 시 UI가 어떻게 망가지는지와 외국인이 이해 불가능한 영역을 시뮬레이션하여 보여줍니다.",
+        "한국어 UI 시안을 입력하면, 외국인이 이해하기 어렵거나 수행 불가능한 영역을 시뮬레이션하여 보여줍니다.",
       effects: [
         "로컬 블로커(Local Blocker) 경고: 외국인이 수행 불가능한 절차(예: 한국 통신사 본인인증 화면)나 로컬라이징에 미흡한 영역에 경고 라벨 부착",
       ],
@@ -391,7 +396,11 @@ export default function Analyze() {
                         </div>
                       )}
                       <div className="flex items-start gap-4">
-                        <div className={cn("text-3xl", isDisabled && "grayscale")}>{persona.emoji}</div>
+                        <img
+                          src={persona.image}
+                          alt={persona.name}
+                          className={cn("w-12 h-12 rounded-full object-cover", isDisabled && "grayscale")}
+                        />
                         <div className="flex-1">
                           <div className="flex items-center justify-between">
                             <div className="flex items-baseline gap-2">
@@ -473,7 +482,11 @@ export default function Analyze() {
             <>
               <DialogHeader>
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="text-5xl">{selectedPersonaDetail.emoji}</div>
+                  <img
+                      src={selectedPersonaDetail.image}
+                      alt={selectedPersonaDetail.name}
+                      className="w-16 h-16 rounded-full object-cover"
+                    />
                   <div>
                     <DialogTitle className="text-2xl mb-1">
                       {selectedPersonaDetail.name}

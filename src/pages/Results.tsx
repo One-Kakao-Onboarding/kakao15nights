@@ -7,6 +7,15 @@ import { useAnalysisStore } from "@/store/analysis"
 import jsPDF from "jspdf"
 import html2canvas from "html2canvas-pro"
 
+// Persona image mapping
+const getPersonaImage = (name: string): string => {
+  if (name.includes('할머니') || name.includes('김복심')) return '/personaA.png'
+  if (name.includes('이혁준') || name.includes('대리')) return '/personaB.png'
+  if (name.includes('김민석') || name.includes('취준생') || name.includes('한 손')) return '/personaC.png'
+  if (name.includes('Brian') || name.includes('미국인') || name.includes('여행객')) return '/personaD.png'
+  return '/personaA.png' // fallback
+}
+
 export default function Results() {
   const navigate = useNavigate()
   const { results, reset } = useAnalysisStore()
@@ -463,7 +472,11 @@ export default function Results() {
                   )}
                 >
                   <div className="flex items-center gap-2">
-                    <span className="text-xl">{persona.emoji}</span>
+                    <img
+                      src={getPersonaImage(persona.name)}
+                      alt={persona.name}
+                      className="w-6 h-6 rounded-full object-cover"
+                    />
                     <span className="text-sm font-medium truncate">{persona.name.split(' ')[0]}</span>
                   </div>
                   <span className={cn("text-lg font-bold tabular-nums", getScoreColor(persona.score))}>
@@ -478,7 +491,11 @@ export default function Results() {
               <div className="bg-card border border-border rounded-xl p-5">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <span className="text-4xl">{activePersona.emoji}</span>
+                    <img
+                      src={getPersonaImage(activePersona.name)}
+                      alt={activePersona.name}
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
                     <div>
                       <h3 className="font-bold text-lg">{activePersona.name}</h3>
                       <p className="text-xs text-muted-foreground">{activePersona.feedback.length}개의 문제 발견</p>
@@ -665,7 +682,12 @@ export default function Results() {
                 <p style={{ fontSize: "14px", color: "#666", margin: "0 0 8px 0" }}>분석 페르소나</p>
                 <div style={{ display: "flex", gap: "8px" }}>
                   {results.personas.map((p, i) => (
-                    <span key={i} style={{ fontSize: "28px" }}>{p.emoji}</span>
+                    <img
+                      key={i}
+                      src={getPersonaImage(p.name)}
+                      alt={p.name}
+                      style={{ width: "32px", height: "32px", borderRadius: "50%", objectFit: "cover" }}
+                    />
                   ))}
                 </div>
               </div>
@@ -696,7 +718,11 @@ export default function Results() {
               {/* Persona Header */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                  <span style={{ fontSize: "36px" }}>{persona.emoji}</span>
+                  <img
+                    src={getPersonaImage(persona.name)}
+                    alt={persona.name}
+                    style={{ width: "48px", height: "48px", borderRadius: "50%", objectFit: "cover" }}
+                  />
                   <div>
                     <h3 style={{ fontSize: "18px", fontWeight: "bold", margin: 0, color: "#111" }}>{persona.name}</h3>
                     <p style={{ fontSize: "14px", color: "#666", margin: "4px 0 0 0" }}>{persona.feedback.length}개의 문제 발견</p>
