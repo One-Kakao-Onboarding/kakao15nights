@@ -2,7 +2,7 @@
 
 > AI 페르소나가 당신의 UI를 진단하고, 놓치기 쉬운 접근성 문제를 시각적으로 보여드립니다.
 
-🌐 **[데모 체험하기](https://funny-treacle-9fdf0e.netlify.app/)**
+데모: https://ux-ray.netlify.app/
 
 ## 💡 프로젝트 소개
 
