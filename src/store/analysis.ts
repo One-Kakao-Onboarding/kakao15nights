@@ -28,7 +28,7 @@ const initialState = {
   uploadedImage: null,
   uploadedFile: null,
   selectedPersonas: [],
-  selectedDevice: 'mobile',
+  selectedDevice: 'desktop',
   results: null,
   isAnalyzing: false,
   error: null,
