@@ -122,14 +122,14 @@ export default function Results() {
                   onLoad={handleImageLoad}
                 />
                 {/* Red Pen Overlay */}
-                {activeCoordinate && imageSize.width > 0 && (
+                {activeCoordinate && (
                   <div
                     className="absolute border-2 border-red-500 bg-red-500/10 rounded transition-all duration-300"
                     style={{
-                      top: `${(activeCoordinate[0] / imageSize.height) * 100}%`,
-                      left: `${(activeCoordinate[1] / imageSize.width) * 100}%`,
-                      height: `${((activeCoordinate[2] - activeCoordinate[0]) / imageSize.height) * 100}%`,
-                      width: `${((activeCoordinate[3] - activeCoordinate[1]) / imageSize.width) * 100}%`,
+                      top: `${activeCoordinate.y * 100}%`,
+                      left: `${activeCoordinate.x * 100}%`,
+                      height: `${activeCoordinate.height * 100}%`,
+                      width: `${activeCoordinate.width * 100}%`,
                     }}
                   >
                     <div className="absolute -top-6 left-0 bg-red-500 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
