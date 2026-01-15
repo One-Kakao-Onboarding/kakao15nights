@@ -47,7 +47,7 @@ export default function Loading() {
         if (prev >= 95) return 95; // Cap at 95% until actual completion
         return prev + 1;
       });
-    }, 150);
+    }, 200);
 
     // Analyze and navigate
     const runAnalysis = async () => {
