@@ -50,6 +50,11 @@ export default function Results() {
 
   useEffect(() => {
     setActiveFeedbackIndex(0);
+    // 페르소나 전환 시 모든 기능 토글 끄기
+    setEnableElderlyVision(false);
+    setEnableBlindSpot(false);
+    setEnableLocalBlocker(false);
+    setEnableThumbZone(false);
   }, [activePersonaIndex]);
 
   useEffect(() => {
