@@ -140,6 +140,99 @@ export interface Coordinate {
   height: number;
 }
 
+export interface ImageValidationResult {
+  isValid: boolean;
+  message: string;
+}
+
+export async function validateImage(
+  image: string,
+  apiKey: string
+): Promise<ImageValidationResult> {
+  const ai = new GoogleGenAI({ apiKey });
+
+  try {
+    const base64Match = image.match(/^data:image\/(\w+);base64,(.+)$/);
+    if (!base64Match) {
+      return {
+        isValid: false,
+        message: '이미지 형식을 인식할 수 없습니다.',
+      };
+    }
+
+    const mimeType = `image/${base64Match[1]}`;
+    const base64Data = base64Match[2];
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-3-flash-preview',
+      contents: [
+        {
+          parts: [
+            {
+              text: `이 이미지가 웹사이트 또는 모바일 앱의 UI 스크린샷인지 판단해주세요.
+
+다음과 같은 이미지는 "유효한 UI 스크린샷"으로 판단합니다:
+- 웹사이트 화면 캡처
+- 모바일 앱 화면 캡처
+- 데스크톱 애플리케이션 화면 캡처
+- 와이어프레임 또는 UI 목업
+
+다음과 같은 이미지는 "유효하지 않음"으로 판단합니다:
+- 일반 사진 (풍경, 인물, 음식, 동물 등)
+- 문서 스캔 (PDF, 종이 문서)
+- 그림, 일러스트, 만화
+- 다이어그램, 차트만 있는 이미지
+- 텍스트만 있는 이미지
+- 로고나 아이콘만 있는 이미지
+
+반드시 아래 JSON 형식으로만 응답해주세요:
+{
+  "isValidUI": true 또는 false,
+  "reason": "판단 이유를 간단히 설명"
+}`,
+            },
+            {
+              inlineData: {
+                mimeType,
+                data: base64Data,
+              },
+            },
+          ],
+        },
+      ],
+    });
+
+    const text = response.text || '';
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+
+    if (jsonMatch) {
+      const parsed = JSON.parse(jsonMatch[0]);
+      if (parsed.isValidUI) {
+        return {
+          isValid: true,
+          message: '',
+        };
+      } else {
+        return {
+          isValid: false,
+          message: parsed.reason || '웹페이지 또는 앱 화면이 아닙니다. 올바른 UI 스크린샷을 업로드해주세요.',
+        };
+      }
+    }
+
+    return {
+      isValid: true,
+      message: '',
+    };
+  } catch (error) {
+    console.error('Image validation error:', error);
+    return {
+      isValid: true,
+      message: '',
+    };
+  }
+}
+
 export interface PersonaResult {
   name: string;
   emoji: string;

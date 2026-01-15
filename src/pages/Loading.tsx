@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Eye, Loader2 } from 'lucide-react';
+import { Eye, Loader2, AlertTriangle, ArrowLeft } from 'lucide-react';
 import { useAnalysisStore } from '@/store/analysis';
-import { analyzeImage } from '@/lib/gemini';
+import { analyzeImage, validateImage } from '@/lib/gemini';
+import { Button } from '@/components/ui/button';
 
 const loadingMessages = [
+  '이미지를 검증하고 있어요...',
   '김복심 할머니가 돋보기를 찾고 계세요...',
   '이혁준 대리가 UI를 훑어보고 있어요...',
   '김민석이 한 손으로 스크롤하고 있어요...',
@@ -13,10 +15,16 @@ const loadingMessages = [
   '분석 결과를 정리하고 있어요...',
 ];
 
+interface ValidationError {
+  title: string;
+  message: string;
+}
+
 export default function Loading() {
   const navigate = useNavigate();
   const [messageIndex, setMessageIndex] = useState(0);
   const [progress, setProgress] = useState(0);
+  const [validationError, setValidationError] = useState<ValidationError | null>(null);
 
   const { uploadedImage, selectedPersonas, selectedDevice, setResults, setIsAnalyzing, setError } =
     useAnalysisStore();
@@ -54,6 +62,19 @@ export default function Loading() {
           throw new Error('API key not configured');
         }
 
+        // Step 1: Validate image
+        const validation = await validateImage(uploadedImage, apiKey);
+
+        if (!validation.isValid) {
+          setValidationError({
+            title: '올바르지 않은 이미지입니다',
+            message: validation.message,
+          });
+          setIsAnalyzing(false);
+          return;
+        }
+
+        // Step 2: Analyze image
         const results = await analyzeImage(uploadedImage, selectedPersonas, selectedDevice, apiKey);
 
         setResults(results);
@@ -93,6 +114,56 @@ export default function Loading() {
     setIsAnalyzing,
     setError,
   ]);
+
+  // Show validation error screen
+  if (validationError) {
+    return (
+      <div className='min-h-screen bg-background flex flex-col items-center justify-center p-8'>
+        <div className='text-center max-w-md'>
+          {/* Logo */}
+          <div className='flex items-center justify-center gap-2 mb-12'>
+            <Eye className='h-8 w-8 text-primary' />
+            <span className='text-2xl font-bold'>UX-Ray</span>
+          </div>
+
+          {/* Error Icon */}
+          <div className='relative mb-8'>
+            <div className='w-24 h-24 mx-auto bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center'>
+              <AlertTriangle className='w-12 h-12 text-red-500' />
+            </div>
+          </div>
+
+          {/* Error Message */}
+          <h2 className='text-xl font-semibold mb-3 text-red-600 dark:text-red-400'>
+            {validationError.title}
+          </h2>
+          <p className='text-muted-foreground mb-8'>
+            {validationError.message}
+          </p>
+
+          {/* Guide */}
+          <div className='bg-muted/50 rounded-lg p-4 mb-8 text-left'>
+            <p className='text-sm font-medium mb-2'>올바른 이미지 예시:</p>
+            <ul className='text-sm text-muted-foreground space-y-1'>
+              <li>• 웹사이트 화면 캡처</li>
+              <li>• 모바일 앱 화면 캡처</li>
+              <li>• 데스크톱 앱 화면 캡처</li>
+              <li>• UI/UX 목업 또는 와이어프레임</li>
+            </ul>
+          </div>
+
+          {/* Back Button */}
+          <Button
+            onClick={() => navigate('/analyze')}
+            className='gap-2'
+          >
+            <ArrowLeft className='h-4 w-4' />
+            다시 업로드하기
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className='min-h-screen bg-background flex flex-col items-center justify-center p-8'>
