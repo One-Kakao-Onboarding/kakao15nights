@@ -161,7 +161,7 @@ export default function Home() {
         }
 
         .onboarding-text {
-          font-size: 52px;
+          font-size: 48px;
           font-weight: bold;
           color: #e8e8e8;
           margin-bottom: 80px;
