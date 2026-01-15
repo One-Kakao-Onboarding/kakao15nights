@@ -28,7 +28,7 @@ const initialState = {
   uploadedImage: null,
   uploadedFile: null,
   selectedPersonas: [],
-  selectedDevice: 'desktop',
+  selectedDevice: 'mobile',
   results: null,
   isAnalyzing: false,
   error: null,
@@ -47,7 +47,13 @@ export const useAnalysisStore = create<AnalysisState>((set) => ({
       : [...state.selectedPersonas, personaId],
   })),
 
-  setSelectedDevice: (device) => set({ selectedDevice: device }),
+  setSelectedDevice: (device) => set((state) => ({
+    selectedDevice: device,
+    // Automatically deselect one-hand persona when switching to desktop
+    selectedPersonas: device === 'desktop'
+      ? state.selectedPersonas.filter((p) => p !== 'one-hand')
+      : state.selectedPersonas,
+  })),
 
   setResults: (results) => set({ results }),
 
