@@ -1,5 +1,4 @@
-import { generateText } from 'ai';
-import { google } from '@ai-sdk/google';
+import { GoogleGenAI } from '@google/genai';
 
 const personaPrompts: Record<string, string> = {
   grandmother: `[Role Definition]
@@ -94,77 +93,25 @@ const personaInfo: Record<string, { name: string; emoji: string }> = {
   foreigner: { name: 'Brian', emoji: '🌏' },
 };
 
-export async function POST(request: Request) {
-  try {
-    const { image, personas, device } = await request.json();
-
-    const results = await Promise.all(
-      personas.map(async (personaId: string) => {
-        const prompt = personaPrompts[personaId];
-        if (!prompt) {
-          return createFallbackResult(personaId);
-        }
-
-        try {
-          const { text } = await generateText({
-            model: google('gemini-3-flash-preview'),
-            messages: [
-              {
-                role: 'user',
-                content: [
-                  {
-                    type: 'image',
-                    image: image,
-                  },
-                  {
-                    type: 'text',
-                    text: `${prompt}\n\n디바이스: ${device}\n\n[Output Format]\n반드시 아래 JSON 형식으로만 응답해주세요. 다른 텍스트 없이 JSON만 출력하세요.\n{"feedback": ["피드백1", "피드백2", ...], "coordinates": [[ymin, xmin, ymax, xmax], ...], "score": 0-100}\n\n주의: feedback 배열의 각 항목과 coordinates 배열의 각 항목은 1:1로 대응되어야 합니다. 첫 번째 피드백의 좌표는 coordinates의 첫 번째 배열입니다.`,
-                  },
-                ],
-              },
-            ],
-          });
-
-          // Parse the response
-          const jsonMatch = text.match(/\{[\s\S]*\}/);
-          if (jsonMatch) {
-            const parsed = JSON.parse(jsonMatch[0]);
-            return {
-              ...personaInfo[personaId],
-              score: parsed.score || 70,
-              feedback: parsed.feedback || [],
-              coordinates: parsed.coordinates || [],
-            };
-          }
-
-          return createFallbackResult(personaId);
-        } catch {
-          return createFallbackResult(personaId);
-        }
-      })
-    );
-
-    const overallScore = Math.round(results.reduce((acc, r) => acc + r.score, 0) / results.length);
-
-    return Response.json({
-      image,
-      device,
-      personas: results,
-      overallScore,
-    });
-  } catch {
-    return Response.json({ error: 'Analysis failed' }, { status: 500 });
-  }
+export interface PersonaResult {
+  name: string;
+  emoji: string;
+  score: number;
+  feedback: string[];
+  coordinates: number[][];
 }
 
-function createFallbackResult(personaId: string) {
+export interface AnalysisResults {
+  image: string;
+  device: string;
+  personas: PersonaResult[];
+  overallScore: number;
+}
+
+function createFallbackResult(personaId: string): PersonaResult {
   const fallbackData: Record<
     string,
-    {
-      score: number;
-      feedback: string[];
-      coordinates: number[][];
-    }
+    { score: number; feedback: string[]; coordinates: number[][] }
   > = {
     grandmother: {
       score: 65,
@@ -220,12 +167,88 @@ function createFallbackResult(personaId: string) {
     },
   };
 
+  const info = personaInfo[personaId] || { name: 'Unknown', emoji: '❓' };
+  const data = fallbackData[personaId] || {
+    score: 60,
+    feedback: ['분석 중 오류가 발생했습니다.'],
+    coordinates: [[0, 0, 100, 100]],
+  };
+
+  return { ...info, ...data };
+}
+
+export async function analyzeImage(
+  image: string,
+  personas: string[],
+  device: string,
+  apiKey: string
+): Promise<AnalysisResults> {
+  const ai = new GoogleGenAI({ apiKey });
+
+  const results = await Promise.all(
+    personas.map(async (personaId: string): Promise<PersonaResult> => {
+      const prompt = personaPrompts[personaId];
+      if (!prompt) {
+        return createFallbackResult(personaId);
+      }
+
+      try {
+        // Extract base64 data from data URL
+        const base64Match = image.match(/^data:image\/(\w+);base64,(.+)$/);
+        if (!base64Match) {
+          return createFallbackResult(personaId);
+        }
+
+        const mimeType = `image/${base64Match[1]}`;
+        const base64Data = base64Match[2];
+
+        const response = await ai.models.generateContent({
+          model: 'gemini-3-flash-preview',
+          contents: [
+            {
+              parts: [
+                {
+                  text: `${prompt}\n\n디바이스: ${device}\n\n[Output Format]\n반드시 아래 JSON 형식으로만 응답해주세요. 다른 텍스트 없이 JSON만 출력하세요.\n{"feedback": ["피드백1", "피드백2", ...], "coordinates": [[ymin, xmin, ymax, xmax], ...], "score": 0-100}\n\n주의: feedback 배열의 각 항목과 coordinates 배열의 각 항목은 1:1로 대응되어야 합니다. 첫 번째 피드백의 좌표는 coordinates의 첫 번째 배열입니다.`,
+                },
+                {
+                  inlineData: {
+                    mimeType,
+                    data: base64Data,
+                  },
+                },
+              ],
+            },
+          ],
+        });
+
+        const text = response.text || '';
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+
+        if (jsonMatch) {
+          const parsed = JSON.parse(jsonMatch[0]);
+          const info = personaInfo[personaId];
+          return {
+            ...info,
+            score: parsed.score || 70,
+            feedback: parsed.feedback || [],
+            coordinates: parsed.coordinates || [],
+          };
+        }
+
+        return createFallbackResult(personaId);
+      } catch (error) {
+        console.error(`Error analyzing for persona ${personaId}:`, error);
+        return createFallbackResult(personaId);
+      }
+    })
+  );
+
+  const overallScore = Math.round(results.reduce((acc, r) => acc + r.score, 0) / results.length);
+
   return {
-    ...personaInfo[personaId],
-    ...(fallbackData[personaId] || {
-      score: 60,
-      feedback: ['분석 중 오류가 발생했습니다.'],
-      coordinates: [[0, 0, 100, 100]],
-    }),
+    image,
+    device,
+    personas: results,
+    overallScore,
   };
 }
