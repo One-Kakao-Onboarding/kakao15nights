@@ -118,12 +118,12 @@ export default function Loading() {
   // Show validation error screen
   if (validationError) {
     return (
-      <div className='min-h-screen bg-background flex flex-col items-center justify-center p-8'>
+      <div className='min-h-screen bg-white flex flex-col items-center justify-center p-8'>
         <div className='text-center max-w-md'>
           {/* Logo */}
           <div className='flex items-center justify-center gap-2 mb-12'>
-            <Eye className='h-8 w-8 text-primary' />
-            <span className='text-2xl font-bold'>UX-Ray</span>
+            <Eye className='h-8 w-8 text-gray-900' />
+            <span className='text-2xl font-bold text-gray-900'>UX-Ray</span>
           </div>
 
           {/* Error Icon */}
@@ -134,17 +134,17 @@ export default function Loading() {
           </div>
 
           {/* Error Message */}
-          <h2 className='text-xl font-semibold mb-3 text-red-600 dark:text-red-400'>
+          <h2 className='text-xl font-semibold mb-3 text-red-600'>
             {validationError.title}
           </h2>
-          <p className='text-muted-foreground mb-8'>
+          <p className='text-gray-600 mb-8'>
             {validationError.message}
           </p>
 
           {/* Guide */}
-          <div className='bg-muted/50 rounded-lg p-4 mb-8 text-left'>
-            <p className='text-sm font-medium mb-2'>올바른 이미지 예시:</p>
-            <ul className='text-sm text-muted-foreground space-y-1'>
+          <div className='bg-gray-50 rounded-xl p-4 mb-8 text-left shadow-sm'>
+            <p className='text-sm font-medium mb-2 text-gray-900'>올바른 이미지 예시:</p>
+            <ul className='text-sm text-gray-600 space-y-1'>
               <li>• 웹사이트 화면 캡처</li>
               <li>• 모바일 앱 화면 캡처</li>
               <li>• 데스크톱 앱 화면 캡처</li>
@@ -166,35 +166,55 @@ export default function Loading() {
   }
 
   return (
-    <div className='min-h-screen bg-background flex flex-col items-center justify-center p-8'>
-      <div className='text-center max-w-md'>
+    <div className='min-h-screen bg-white flex flex-col items-center justify-center p-8 relative overflow-hidden'>
+      {/* X-ray scan effect */}
+      <div
+        className='absolute top-0 left-0 w-full h-full pointer-events-none'
+        style={{
+          background: 'linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.05) 45%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.05) 55%, transparent 100%)',
+          animation: 'xrayScanGlobal 3s ease-in-out infinite',
+        }}
+      />
+
+      <div className='text-center max-w-md relative z-10'>
         {/* Logo */}
         <div className='flex items-center justify-center gap-2 mb-12'>
-          <Eye className='h-8 w-8 text-primary' />
-          <span className='text-2xl font-bold'>UX-Ray</span>
+          <Eye className='h-8 w-8 text-gray-900' />
+          <span className='text-2xl font-bold text-gray-900'>UX-Ray</span>
         </div>
 
-        {/* Loading Animation */}
+        {/* Loading Animation - X logo */}
         <div className='relative mb-8'>
-          <div className='w-24 h-24 mx-auto'>
-            <Loader2 className='w-24 h-24 text-primary animate-spin' />
+          <div className='w-32 h-32 mx-auto bg-gradient-to-br from-gray-50 to-gray-100 rounded-full flex items-center justify-center shadow-lg'
+            style={{
+              animation: 'pulse 2s ease-in-out infinite'
+            }}
+          >
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className='w-16 h-16 animate-spin' style={{ animationDuration: '3s' }}>
+              <line x1="30" y1="30" x2="70" y2="70" stroke="#000" strokeWidth="3" strokeLinecap="round"/>
+              <line x1="70" y1="30" x2="30" y2="70" stroke="#000" strokeWidth="3" strokeLinecap="round"/>
+              <line x1="50" y1="15" x2="50" y2="5" stroke="#000" strokeWidth="2" strokeLinecap="round" opacity="0.6"/>
+              <line x1="50" y1="85" x2="50" y2="95" stroke="#000" strokeWidth="2" strokeLinecap="round" opacity="0.6"/>
+              <line x1="15" y1="50" x2="5" y2="50" stroke="#000" strokeWidth="2" strokeLinecap="round" opacity="0.6"/>
+              <line x1="85" y1="50" x2="95" y2="50" stroke="#000" strokeWidth="2" strokeLinecap="round" opacity="0.6"/>
+            </svg>
           </div>
         </div>
 
         {/* Loading Message */}
-        <h2 className='text-xl font-semibold mb-2'>페르소나들이 사용성 테스트 중입니다</h2>
-        <p className='text-muted-foreground mb-8 h-6 transition-all'>
+        <h2 className='text-xl font-semibold mb-2 text-gray-900'>페르소나들이 사용성 테스트 중입니다</h2>
+        <p className='text-gray-600 mb-8 h-6 transition-all'>
           {loadingMessages[messageIndex]}
         </p>
 
         {/* Progress Bar */}
-        <div className='w-full bg-muted rounded-full h-2 overflow-hidden'>
+        <div className='w-full bg-gray-100 rounded-full h-2 overflow-hidden shadow-inner'>
           <div
-            className='h-full bg-primary transition-all duration-300 ease-out'
+            className='h-full bg-gray-900 transition-all duration-300 ease-out rounded-full shadow-sm'
             style={{ width: `${progress}%` }}
           />
         </div>
-        <p className='text-sm text-muted-foreground mt-2'>{progress}%</p>
+        <p className='text-sm text-gray-600 mt-2'>{progress}%</p>
       </div>
     </div>
   );

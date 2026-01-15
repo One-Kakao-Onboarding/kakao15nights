@@ -7,15 +7,6 @@ import { useAnalysisStore } from "@/store/analysis"
 import jsPDF from "jspdf"
 import html2canvas from "html2canvas-pro"
 
-// Persona image mapping
-const getPersonaImage = (name: string): string => {
-  if (name.includes('할머니') || name.includes('김복심')) return '/personaA.png'
-  if (name.includes('이혁준') || name.includes('대리')) return '/personaB.png'
-  if (name.includes('김민석') || name.includes('취준생') || name.includes('한 손')) return '/personaC.png'
-  if (name.includes('Brian') || name.includes('미국인') || name.includes('여행객')) return '/personaD.png'
-  return '/personaA.png' // fallback
-}
-
 export default function Results() {
   const navigate = useNavigate()
   const { results, reset } = useAnalysisStore()
@@ -23,10 +14,6 @@ export default function Results() {
   const [activeFeedbackIndex, setActiveFeedbackIndex] = useState(0)
   const pdfReportRef = useRef<HTMLDivElement>(null)
   const [isExporting, setIsExporting] = useState(false)
-  const [enableElderlyVision, setEnableElderlyVision] = useState(false)
-  const [enableBlindSpot, setEnableBlindSpot] = useState(false)
-  const [enableLocalBlocker, setEnableLocalBlocker] = useState(false)
-  const [enableThumbZone, setEnableThumbZone] = useState(false)
 
   useEffect(() => {
     if (!results) {
@@ -39,61 +26,9 @@ export default function Results() {
     setActiveFeedbackIndex(0)
   }, [activePersonaIndex])
 
-  useEffect(() => {
-    if (enableElderlyVision) {
-      const grandmotherIndex = results?.personas.findIndex(p => p.name.includes('할머니'))
-      if (grandmotherIndex !== undefined && grandmotherIndex !== -1) {
-        setActivePersonaIndex(grandmotherIndex)
-      }
-    }
-  }, [enableElderlyVision, results])
-
-  useEffect(() => {
-    if (enableBlindSpot) {
-      const adhdIndex = results?.personas.findIndex(p => p.name.includes('이혁준') || p.name.includes('대리'))
-      if (adhdIndex !== undefined && adhdIndex !== -1) {
-        setActivePersonaIndex(adhdIndex)
-      }
-    }
-  }, [enableBlindSpot, results])
-
-  useEffect(() => {
-    if (enableLocalBlocker) {
-      const foreignerIndex = results?.personas.findIndex(p => p.name.includes('Brian') || p.name.includes('미국인'))
-      if (foreignerIndex !== undefined && foreignerIndex !== -1) {
-        setActivePersonaIndex(foreignerIndex)
-      }
-    }
-  }, [enableLocalBlocker, results])
-
-  useEffect(() => {
-    if (enableThumbZone) {
-      const oneHandIndex = results?.personas.findIndex(p => p.name.includes('김민석') || p.name.includes('취준생'))
-      if (oneHandIndex !== undefined && oneHandIndex !== -1) {
-        setActivePersonaIndex(oneHandIndex)
-      }
-    }
-  }, [enableThumbZone, results])
-
   const handleNewAnalysis = () => {
     reset()
     navigate("/analyze")
-  }
-
-  const getBlurSeverity = (coord: { x: number; y: number; width: number; height: number }, feedback: string) => {
-    const area = coord.width * coord.height
-    let baseSeverity = 2
-
-    if (area < 0.005) baseSeverity = 4
-    else if (area < 0.02) baseSeverity = 3
-    else if (area < 0.05) baseSeverity = 2
-    else baseSeverity = 1.5
-
-    if (feedback.includes('작') || feedback.includes('깨알')) baseSeverity += 1
-    if (feedback.includes('흐릿') || feedback.includes('보이') || feedback.includes('글씨')) baseSeverity += 0.5
-    if (feedback.includes('텍스트')) baseSeverity += 0.3
-
-    return Math.min(baseSeverity, 5)
   }
 
   const handleExportPDF = async () => {
@@ -166,10 +101,10 @@ export default function Results() {
 
   if (!results) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <Eye className="h-12 w-12 text-primary mx-auto mb-4 animate-pulse" />
-          <p className="text-muted-foreground">결과를 불러오는 중...</p>
+          <Eye className="h-12 w-12 text-gray-900 mx-auto mb-4 animate-pulse" />
+          <p className="text-gray-600">결과를 불러오는 중...</p>
         </div>
       </div>
     )
@@ -191,13 +126,13 @@ export default function Results() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="border-b border-border bg-background/95 backdrop-blur sticky top-0 z-50">
+      <header className="border-b border-gray-100 bg-white/95 backdrop-blur sticky top-0 z-50 shadow-sm">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <Link to="/" className="flex items-center gap-2">
-            <Eye className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold">UX-Ray</span>
+            <Eye className="h-6 w-6 text-gray-900" />
+            <span className="text-xl font-bold text-gray-900">UX-Ray</span>
           </Link>
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" className="gap-2 bg-transparent" onClick={handleNewAnalysis}>
@@ -212,120 +147,41 @@ export default function Results() {
         </div>
       </header>
 
-      <main className="container mx-auto py-4 px-4 bg-background">
-        <div className="grid lg:grid-cols-2 gap-6">
+      <main className="container mx-auto py-8 px-4 bg-white">
+        {/* Overall Score */}
+        <div className="text-center mb-8">
+          <h1 className="text-2xl font-bold mb-4 text-gray-900">UX 진단 결과</h1>
+          <div className="inline-flex items-center gap-4 bg-white rounded-2xl p-6 shadow-lg">
+            <div>
+              <p className="text-sm text-gray-600 mb-1">종합 점수</p>
+              <p className={cn("text-5xl font-bold", getScoreColor(results.overallScore))}>{results.overallScore}</p>
+            </div>
+            <div className="h-16 w-px bg-border" />
+            <div className="text-left">
+              <p className="text-sm text-gray-600 mb-1">분석 페르소나</p>
+              <div className="flex gap-1">
+                {results.personas.map((p, i) => (
+                  <span key={i} className="text-2xl" title={p.name}>
+                    {p.emoji}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid lg:grid-cols-5 gap-8">
           {/* Left: Image with Red Pen */}
-          <div>
-            <div className="bg-card border border-border rounded-xl p-4 lg:sticky lg:top-20 max-h-[calc(100vh-6rem)] overflow-auto">
+          <div className="lg:col-span-3">
+            <div className="bg-white rounded-2xl p-4 shadow-md">
               <div className="relative inline-block w-full">
                 <img
                   src={results.image}
                   alt="Analyzed UI"
-                  className="max-h-[70vh] w-auto max-w-full rounded-lg object-contain"
+                  className="w-full rounded-lg"
                 />
-
-                {/* Elderly Vision Simulator Overlays */}
-                {enableElderlyVision && activePersona && activePersona.name.includes('할머니') && (
-                  <div className="absolute inset-0 pointer-events-none rounded-lg overflow-hidden">
-                    {activePersona.coordinates.map((coord, idx) => (
-                      <div
-                        key={`blur-${idx}`}
-                        className="absolute transition-all duration-300"
-                        style={{
-                          top: `${coord.y * 100}%`,
-                          left: `${coord.x * 100}%`,
-                          width: `${coord.width * 100}%`,
-                          height: `${coord.height * 100}%`,
-                          backdropFilter: `blur(${getBlurSeverity(coord, activePersona.feedback[idx])}px) contrast(${0.9 - getBlurSeverity(coord, activePersona.feedback[idx]) * 0.05}) brightness(1.1)`,
-                          WebkitBackdropFilter: `blur(${getBlurSeverity(coord, activePersona.feedback[idx])}px) contrast(${0.9 - getBlurSeverity(coord, activePersona.feedback[idx]) * 0.05}) brightness(1.1)`,
-                        }}
-                      />
-                    ))}
-                  </div>
-                )}
-
-                {/* Blind Spot Blackout Overlays */}
-                {enableBlindSpot && activePersona && (activePersona.name.includes('이혁준') || activePersona.name.includes('대리')) && (
-                  <div className="absolute inset-0 pointer-events-none rounded-lg overflow-hidden">
-                    {activePersona.coordinates.map((coord, idx) => (
-                      <div
-                        key={`blackout-${idx}`}
-                        className="absolute transition-all duration-500 flex items-center justify-center"
-                        style={{
-                          top: `${coord.y * 100}%`,
-                          left: `${coord.x * 100}%`,
-                          width: `${coord.width * 100}%`,
-                          height: `${coord.height * 100}%`,
-                          backgroundColor: 'rgba(0, 0, 0, 0.95)',
-                          borderRadius: '2px',
-                        }}
-                      >
-                        <span className="text-white/30 text-xs font-medium">SKIP</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Local Blocker Warning Overlays */}
-                {enableLocalBlocker && activePersona && (activePersona.name.includes('Brian') || activePersona.name.includes('미국인')) && (
-                  <div className="absolute inset-0 pointer-events-none rounded-lg overflow-hidden">
-                    {activePersona.coordinates.map((coord, idx) => (
-                      <div
-                        key={`blocker-${idx}`}
-                        className="absolute transition-all duration-300 flex items-center justify-center"
-                        style={{
-                          top: `${coord.y * 100}%`,
-                          left: `${coord.x * 100}%`,
-                          width: `${coord.width * 100}%`,
-                          height: `${coord.height * 100}%`,
-                          backgroundColor: 'rgba(239, 68, 68, 0.15)',
-                          border: '2px dashed #ef4444',
-                          borderRadius: '4px',
-                        }}
-                      >
-                        <div className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded shadow-lg flex items-center gap-1">
-                          <span>⚠️</span>
-                          <span>LOCAL ONLY</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Thumb Zone Overlays */}
-                {enableThumbZone && activePersona && (activePersona.name.includes('김민석') || activePersona.name.includes('취준생')) && (
-                  <div className="absolute inset-0 pointer-events-none rounded-lg overflow-hidden">
-                    {activePersona.coordinates.map((coord, idx) => {
-                      const isUpperZone = coord.y < 0.3
-                      const isMiddleZone = coord.y >= 0.3 && coord.y < 0.6
-                      return (
-                        <div
-                          key={`thumb-${idx}`}
-                          className="absolute transition-all duration-300"
-                          style={{
-                            top: `${coord.y * 100}%`,
-                            left: `${coord.x * 100}%`,
-                            width: `${coord.width * 100}%`,
-                            height: `${coord.height * 100}%`,
-                            backgroundColor: isUpperZone ? 'rgba(239, 68, 68, 0.25)' : isMiddleZone ? 'rgba(234, 179, 8, 0.2)' : 'rgba(34, 197, 94, 0.15)',
-                            border: `2px solid ${isUpperZone ? '#ef4444' : isMiddleZone ? '#eab308' : '#22c55e'}`,
-                            borderRadius: '4px',
-                          }}
-                        >
-                          <div className={cn(
-                            "absolute -top-5 left-0 text-white text-[10px] font-bold px-1.5 py-0.5 rounded shadow whitespace-nowrap",
-                            isUpperZone ? "bg-red-500" : isMiddleZone ? "bg-yellow-500" : "bg-green-500"
-                          )}>
-                            {isUpperZone ? '👆 어려움' : isMiddleZone ? '👆 불편' : '👆 편함'}
-                          </div>
-                        </div>
-                      )
-                    })}
-                  </div>
-                )}
-
                 {/* Red Pen Overlay */}
-                {activeCoordinate && !enableElderlyVision && !enableBlindSpot && !enableLocalBlocker && !enableThumbZone && (
+                {activeCoordinate && (
                   <div
                     className="absolute border-2 border-red-500 bg-red-500/10 rounded transition-all duration-300"
                     style={{
@@ -342,290 +198,105 @@ export default function Results() {
                 )}
               </div>
 
-              {/* Elderly Vision Info */}
-              {enableElderlyVision && activePersona?.name.includes('할머니') && (
-                <div className="mt-4 p-3 bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800 rounded-lg">
-                  <p className="text-sm text-purple-900 dark:text-purple-100 flex items-center gap-2">
-                    <span className="text-lg">👁️</span>
-                    <span>
-                      <strong>노안 시뮬레이터 활성화:</strong> 75세 고령층의 시각으로 화면을 보고 있습니다.
-                      작은 텍스트일수록 더 흐리게 표현됩니다.
-                    </span>
-                  </p>
-                </div>
-              )}
-
-              {/* Blind Spot Info */}
-              {enableBlindSpot && activePersona && (activePersona.name.includes('이혁준') || activePersona.name.includes('대리')) && (
-                <div className="mt-4 p-3 bg-gray-900 dark:bg-gray-950 border border-gray-700 rounded-lg">
-                  <p className="text-sm text-gray-100 flex items-center gap-2">
-                    <span className="text-lg">🙈</span>
-                    <span>
-                      <strong>블라인드 스팟 활성화:</strong> 검은 영역은 ADHD 성향의 사용자가 읽지 않고 스킵한 텍스트입니다.
-                      당신이 심혈을 기울인 카피가 실제로는 전달되지 않았을 수 있습니다.
-                    </span>
-                  </p>
-                </div>
-              )}
-
-              {/* Local Blocker Info */}
-              {enableLocalBlocker && activePersona && (activePersona.name.includes('Brian') || activePersona.name.includes('미국인')) && (
-                <div className="mt-4 p-3 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg">
-                  <p className="text-sm text-red-900 dark:text-red-100 flex items-center gap-2">
-                    <span className="text-lg">🌏</span>
-                    <span>
-                      <strong>로컬 블로커 활성화:</strong> 표시된 영역은 외국인 사용자가 이해하기 어렵거나 수행할 수 없는 절차입니다.
-                      한국어 전용 콘텐츠, 현지 결제 시스템, 미번역 UI 등이 포함됩니다.
-                    </span>
-                  </p>
-                </div>
-              )}
-
-              {/* Thumb Zone Info */}
-              {enableThumbZone && activePersona && (activePersona.name.includes('김민석') || activePersona.name.includes('취준생')) && (
-                <div className="mt-4 p-3 bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-800 rounded-lg">
-                  <p className="text-sm text-orange-900 dark:text-orange-100 flex items-center gap-2">
-                    <span className="text-lg">👆</span>
-                    <span>
-                      <strong>Thumb Zone 활성화:</strong> 한 손 조작 시 엄지가 닿기 어려운 영역을 표시합니다.
-                      <span className="inline-flex items-center gap-1 ml-1">
-                        <span className="inline-block w-3 h-3 rounded bg-red-500"></span>닿기 어려움
-                        <span className="inline-block w-3 h-3 rounded bg-yellow-500 ml-2"></span>불편함
-                        <span className="inline-block w-3 h-3 rounded bg-green-500 ml-2"></span>편함
-                      </span>
-                    </span>
-                  </p>
-                </div>
-              )}
-
               {/* Feedback Navigation */}
-              {!enableElderlyVision && !enableBlindSpot && !enableLocalBlocker && !enableThumbZone && (
-                <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={activeFeedbackIndex === 0}
-                    onClick={() => setActiveFeedbackIndex((prev) => prev - 1)}
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                    이전 문제
-                  </Button>
-                  <span className="text-sm text-muted-foreground">
-                    {activeFeedbackIndex + 1} / {activePersona?.feedback.length || 0}
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={activeFeedbackIndex >= (activePersona?.feedback.length || 1) - 1}
-                    onClick={() => setActiveFeedbackIndex((prev) => prev + 1)}
-                  >
-                    다음 문제
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </div>
-              )}
+              <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={activeFeedbackIndex === 0}
+                  onClick={() => setActiveFeedbackIndex((prev) => prev - 1)}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  이전 문제
+                </Button>
+                <span className="text-sm text-gray-600">
+                  {activeFeedbackIndex + 1} / {activePersona?.feedback.length || 0}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={activeFeedbackIndex >= (activePersona?.feedback.length || 1) - 1}
+                  onClick={() => setActiveFeedbackIndex((prev) => prev + 1)}
+                >
+                  다음 문제
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           </div>
 
           {/* Right: Feedback Panel */}
-          <div className="space-y-4">
-            {/* Overall Score - Emphasized */}
-            <div className="bg-gradient-to-br from-primary/15 via-primary/10 to-primary/5 border-2 border-primary/30 rounded-xl p-5 shadow-lg">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">종합 UX 점수</p>
-                  <div className="flex items-baseline gap-2">
-                    <p className={cn("text-5xl font-bold tracking-tight", getScoreColor(results.overallScore))}>{results.overallScore}</p>
-                    <span className="text-lg text-muted-foreground font-medium">/ 100</span>
-                  </div>
-                  <div className="w-32 bg-muted rounded-full h-1.5 mt-2">
-                    <div
-                      className={cn("h-full rounded-full transition-all", getScoreBg(results.overallScore))}
-                      style={{ width: `${results.overallScore}%` }}
-                    />
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-xs text-muted-foreground mb-2">분석 완료</p>
-                  <div className="flex gap-1.5">
-                    {results.personas.map((p, i) => (
-                      <span key={i} className="text-2xl" title={p.name}>
-                        {p.emoji}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-
+          <div className="lg:col-span-2 space-y-6">
             {/* Persona Tabs */}
-            <div className="grid grid-cols-2 gap-2">
+            <div className="flex gap-2 overflow-x-auto pb-2">
               {results.personas.map((persona, index) => (
                 <button
                   key={index}
                   onClick={() => setActivePersonaIndex(index)}
                   className={cn(
-                    "flex items-center justify-between px-3 py-2.5 rounded-lg border-2 transition-all",
+                    "flex items-center gap-2 px-4 py-2 rounded-xl transition-all whitespace-nowrap",
                     activePersonaIndex === index
-                      ? "border-primary bg-primary/5 shadow-sm"
-                      : "border-border hover:border-primary/50",
+                      ? "bg-gray-50 shadow-md ring-2 ring-gray-900"
+                      : "bg-white shadow-sm hover:shadow-md",
                   )}
                 >
-                  <div className="flex items-center gap-2">
-                    <img
-                      src={getPersonaImage(persona.name)}
-                      alt={persona.name}
-                      className="w-6 h-6 rounded-full object-cover"
-                    />
-                    <span className="text-sm font-medium truncate">{persona.name.split(' ')[0]}</span>
-                  </div>
-                  <span className={cn("text-lg font-bold tabular-nums", getScoreColor(persona.score))}>
-                    {persona.score}
-                  </span>
+                  <span className="text-xl">{persona.emoji}</span>
+                  <span className="text-sm font-medium">{persona.name}</span>
                 </button>
               ))}
             </div>
 
             {/* Active Persona Card */}
             {activePersona && (
-              <div className="bg-card border border-border rounded-xl p-5">
+              <div className="bg-white rounded-2xl p-6 shadow-md">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <img
-                      src={getPersonaImage(activePersona.name)}
-                      alt={activePersona.name}
-                      className="w-12 h-12 rounded-full object-cover"
-                    />
+                    <span className="text-4xl">{activePersona.emoji}</span>
                     <div>
                       <h3 className="font-bold text-lg">{activePersona.name}</h3>
-                      <p className="text-xs text-muted-foreground">{activePersona.feedback.length}개의 문제 발견</p>
+                      <p className="text-sm text-gray-600">{activePersona.feedback.length}개의 문제 발견</p>
                     </div>
                   </div>
-                  <div className="text-right bg-gradient-to-br from-primary/5 to-transparent px-4 py-2 rounded-lg border border-primary/10">
-                    <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-0.5">점수</p>
-                    <p className={cn("text-3xl font-bold tabular-nums", getScoreColor(activePersona.score))}>
+                  <div className="text-right">
+                    <p className="text-sm text-gray-600">점수</p>
+                    <p className={cn("text-3xl font-bold", getScoreColor(activePersona.score))}>
                       {activePersona.score}
                     </p>
                   </div>
                 </div>
 
                 {/* Score Bar */}
-                <div className="w-full bg-muted rounded-full h-2 mb-4 shadow-inner">
+                <div className="w-full bg-gray-100 rounded-full h-2 mb-6">
                   <div
-                    className={cn("h-full rounded-full transition-all shadow-sm", getScoreBg(activePersona.score))}
+                    className={cn("h-full rounded-full transition-all", getScoreBg(activePersona.score))}
                     style={{ width: `${activePersona.score}%` }}
                   />
                 </div>
 
-                {/* Elderly Vision Simulator Toggle - Only for Grandmother */}
-                {activePersona.name.includes('할머니') && (
-                  <div className="mb-4">
-                    <Button
-                      variant={enableElderlyVision ? "default" : "outline"}
-                      size="sm"
-                      className="w-full gap-2"
-                      onClick={() => {
-                        setEnableElderlyVision(!enableElderlyVision)
-                        setEnableBlindSpot(false)
-                        setEnableLocalBlocker(false)
-                        setEnableThumbZone(false)
-                      }}
-                    >
-                      👵 노안 시뮬레이터 {enableElderlyVision ? 'OFF' : 'ON'}
-                    </Button>
-                  </div>
-                )}
-
-                {/* Blind Spot Simulator Toggle - Only for ADHD */}
-                {(activePersona.name.includes('이혁준') || activePersona.name.includes('대리')) && (
-                  <div className="mb-4">
-                    <Button
-                      variant={enableBlindSpot ? "default" : "outline"}
-                      size="sm"
-                      className={cn(
-                        "w-full gap-2",
-                        enableBlindSpot && "bg-gray-900 hover:bg-gray-800 text-white"
-                      )}
-                      onClick={() => {
-                        setEnableBlindSpot(!enableBlindSpot)
-                        setEnableElderlyVision(false)
-                        setEnableLocalBlocker(false)
-                        setEnableThumbZone(false)
-                      }}
-                    >
-                      📱 블라인드 스팟 {enableBlindSpot ? 'OFF' : 'ON'}
-                    </Button>
-                  </div>
-                )}
-
-                {/* Local Blocker Toggle - Only for Foreigner */}
-                {(activePersona.name.includes('Brian') || activePersona.name.includes('미국인')) && (
-                  <div className="mb-4">
-                    <Button
-                      variant={enableLocalBlocker ? "default" : "outline"}
-                      size="sm"
-                      className={cn(
-                        "w-full gap-2",
-                        enableLocalBlocker && "bg-red-500 hover:bg-red-600 text-white"
-                      )}
-                      onClick={() => {
-                        setEnableLocalBlocker(!enableLocalBlocker)
-                        setEnableElderlyVision(false)
-                        setEnableBlindSpot(false)
-                        setEnableThumbZone(false)
-                      }}
-                    >
-                      🌏 로컬 블로커 {enableLocalBlocker ? 'OFF' : 'ON'}
-                    </Button>
-                  </div>
-                )}
-
-                {/* Thumb Zone Toggle - Only for One-Hand User */}
-                {(activePersona.name.includes('김민석') || activePersona.name.includes('취준생')) && (
-                  <div className="mb-6">
-                    <Button
-                      variant={enableThumbZone ? "default" : "outline"}
-                      size="sm"
-                      className={cn(
-                        "w-full gap-2",
-                        enableThumbZone && "bg-orange-500 hover:bg-orange-600 text-white"
-                      )}
-                      onClick={() => {
-                        setEnableThumbZone(!enableThumbZone)
-                        setEnableElderlyVision(false)
-                        setEnableBlindSpot(false)
-                        setEnableLocalBlocker(false)
-                      }}
-                    >
-                      🚌 Thumb Zone {enableThumbZone ? 'OFF' : 'ON'}
-                    </Button>
-                  </div>
-                )}
-
                 {/* Feedback List */}
-                <div className="space-y-2">
-                  <h4 className="font-semibold text-xs text-muted-foreground uppercase tracking-wide mb-2">발견된 문제</h4>
+                <div className="space-y-3">
+                  <h4 className="font-semibold text-sm text-gray-600 uppercase tracking-wide">발견된 문제</h4>
                   {activePersona.feedback.map((feedback, index) => (
                     <button
                       key={index}
                       onClick={() => setActiveFeedbackIndex(index)}
                       className={cn(
-                        "w-full text-left p-3 rounded-lg border transition-all",
+                        "w-full text-left p-4 rounded-lg border transition-all",
                         activeFeedbackIndex === index
                           ? "border-red-500 bg-red-50 dark:bg-red-500/10"
                           : "border-border hover:border-red-300",
                       )}
                     >
-                      <div className="flex gap-2.5">
+                      <div className="flex gap-3">
                         <span
                           className={cn(
-                            "flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold",
-                            activeFeedbackIndex === index ? "bg-red-500 text-white" : "bg-muted text-muted-foreground",
+                            "flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold",
+                            activeFeedbackIndex === index ? "bg-red-500 text-white" : "bg-gray-100 text-gray-600",
                           )}
                         >
                           {index + 1}
                         </span>
-                        <p className="text-sm leading-relaxed">{feedback}</p>
+                        <p className="text-sm">{feedback}</p>
                       </div>
                     </button>
                   ))}
@@ -634,8 +305,8 @@ export default function Results() {
             )}
 
             {/* Action Buttons */}
-            <div>
-              <Button variant="outline" className="w-full gap-2 bg-transparent" onClick={handleNewAnalysis}>
+            <div className="flex gap-3">
+              <Button variant="outline" className="flex-1 gap-2 bg-transparent" onClick={handleNewAnalysis}>
                 <ArrowLeft className="h-4 w-4" />
                 다시 진단하기
               </Button>
@@ -682,12 +353,7 @@ export default function Results() {
                 <p style={{ fontSize: "14px", color: "#666", margin: "0 0 8px 0" }}>분석 페르소나</p>
                 <div style={{ display: "flex", gap: "8px" }}>
                   {results.personas.map((p, i) => (
-                    <img
-                      key={i}
-                      src={getPersonaImage(p.name)}
-                      alt={p.name}
-                      style={{ width: "32px", height: "32px", borderRadius: "50%", objectFit: "cover" }}
-                    />
+                    <span key={i} style={{ fontSize: "28px" }}>{p.emoji}</span>
                   ))}
                 </div>
               </div>
@@ -718,11 +384,7 @@ export default function Results() {
               {/* Persona Header */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                  <img
-                    src={getPersonaImage(persona.name)}
-                    alt={persona.name}
-                    style={{ width: "48px", height: "48px", borderRadius: "50%", objectFit: "cover" }}
-                  />
+                  <span style={{ fontSize: "36px" }}>{persona.emoji}</span>
                   <div>
                     <h3 style={{ fontSize: "18px", fontWeight: "bold", margin: 0, color: "#111" }}>{persona.name}</h3>
                     <p style={{ fontSize: "14px", color: "#666", margin: "4px 0 0 0" }}>{persona.feedback.length}개의 문제 발견</p>

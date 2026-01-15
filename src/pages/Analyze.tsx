@@ -16,7 +16,7 @@ import {
 interface PersonaDetail {
   id: string
   emoji: string
-  image: string
+  image?: string
   name: string
   age: string
   description: string
@@ -33,9 +33,9 @@ interface PersonaDetail {
 const personasData: PersonaDetail[] = [
   {
     id: "grandmother",
-    emoji: "👵",
-    image: "/personaA.png",
-    name: "디지털 취약계층 김복심 할머니",
+    emoji: "",
+    image: "/persona-grandmother.png",
+    name: "김복심",
     age: "75세",
     description: "노안으로 작은 글씨를 읽기 힘들고, 디지털 기기 조작에 서투른 고령층 사용자",
     tags: ["가독성", "신뢰성", "인지부하"],
@@ -56,9 +56,9 @@ const personasData: PersonaDetail[] = [
   },
   {
     id: "adhd",
-    emoji: "📱",
-    image: "/personaB.png",
-    name: "참을성이 부족한 이혁준 대리",
+    emoji: "",
+    image: "/persona-adhd.png",
+    name: "이혁준",
     age: "32세",
     description: "ADHD 성향으로 참을성이 부족하고, 트렌디한 UI를 선호하는 MZ세대",
     tags: ["효율성", "심미성", "피드백"],
@@ -78,9 +78,9 @@ const personasData: PersonaDetail[] = [
   },
   {
     id: "one-hand",
-    emoji: "🚌",
-    image: "/personaC.png",
-    name: "한 손 조작 사용자 김민석",
+    emoji: "",
+    image: "/persona-onehand.png",
+    name: "김민석",
     age: "25세",
     description: "만원 지하철에서 한 손으로만 스마트폰을 조작하는 취준생",
     tags: ["도달성", "오작동방지", "모바일최적화"],
@@ -102,9 +102,9 @@ const personasData: PersonaDetail[] = [
   },
   {
     id: "foreigner",
-    emoji: "🌏",
-    image: "/personaD.png",
-    name: "미국인 Brian",
+    emoji: "",
+    image: "/persona-foreigner.png",
+    name: "Brian",
     age: "40세",
     description: "한국어를 전혀 모르고 브라우저 번역에 의존하는 미국인 여행객",
     tags: ["현지화", "웹표준", "접근성"],
@@ -115,9 +115,9 @@ const personasData: PersonaDetail[] = [
       "로컬 UX의 늪: 본인인증(휴대폰/아이핀), 도로명 주소 검색, Active X 기반 결제 등 한국 특화 프로세스에서 길을 잃음",
     ],
     ability: {
-      title: "고유 능력: 로컬 장벽 맵",
+      title: "고유 능력: 레이아웃 파괴 및 장벽 맵",
       description:
-        "한국어 UI 시안을 입력하면, 외국인이 이해하기 어렵거나 수행 불가능한 영역을 시뮬레이션하여 보여줍니다.",
+        "한국어 UI 시안을 입력하면, 영문/다국어 변환 시 UI가 어떻게 망가지는지와 외국인이 이해 불가능한 영역을 시뮬레이션하여 보여줍니다.",
       effects: [
         "로컬 블로커(Local Blocker) 경고: 외국인이 수행 불가능한 절차(예: 한국 통신사 본인인증 화면)나 로컬라이징에 미흡한 영역에 경고 라벨 부착",
       ],
@@ -134,7 +134,6 @@ const devices = [
 const demoImages = [
   { id: "daum", path: "/demo_daum.png", name: "다음", description: "데모 • 모바일 앱" },
   { id: "naver", path: "/demo_naver.png", name: "네이버", description: "데모 • 모바일 앱" },
-  { id: "youtube", path: "/demo_youtube.jpg", name: "유튜브", description: "데모 • 모바일 앱" },
 ]
 
 export default function Analyze() {
@@ -204,16 +203,16 @@ export default function Analyze() {
   const isReadyToAnalyze = uploadedImage && selectedPersonas.length > 0
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-black">
       {/* Header */}
-      <header className="border-b border-border bg-background/95 backdrop-blur sticky top-0 z-50">
+      <header className="border-b border-white/10 bg-black/50 backdrop-blur-xl sticky top-0 z-50">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <Link to="/" className="flex items-center gap-2">
-            <Eye className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold">UX-Ray</span>
+            <Eye className="h-6 w-6 text-white" />
+            <span className="text-xl font-bold text-white">UX-Ray</span>
           </Link>
           <Link to="/">
-            <Button variant="ghost" size="sm" className="gap-2">
+            <Button variant="ghost" size="sm" className="gap-2 text-white hover:bg-white/10">
               <ArrowLeft className="h-4 w-4" />
               홈으로
             </Button>
@@ -224,250 +223,219 @@ export default function Analyze() {
       <main className="container mx-auto py-8 px-4">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold mb-2">UX 진단 시작하기</h1>
-            <p className="text-muted-foreground">UI 스크린샷을 업로드하고, 진단받을 페르소나를 선택하세요.</p>
+            <h1 className="text-3xl font-bold mb-2 text-white">UX 진단 시작하기</h1>
+            <p className="text-gray-400">UI 스크린샷을 업로드하고, 진단받을 페르소나를 선택하세요.</p>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-8">
-            {/* Left: Image Upload */}
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-sm">
-                    1
-                  </span>
-                  이미지 업로드
-                </h2>
-                <div
-                  className={cn(
-                    "border-2 border-dashed rounded-xl p-8 transition-colors",
-                    isDragging ? "border-primary bg-primary/5" : "border-border hover:border-primary/50",
-                    uploadedImage && "border-solid border-primary bg-primary/5",
-                  )}
-                  onDragOver={(e) => {
-                    e.preventDefault()
-                    setIsDragging(true)
-                  }}
-                  onDragLeave={() => setIsDragging(false)}
-                  onDrop={handleDrop}
-                >
-                  {uploadedImage ? (
-                    <div className="space-y-4">
-                      <img
-                        src={uploadedImage}
-                        alt="Uploaded UI"
-                        className="max-h-64 mx-auto rounded-lg shadow-lg"
-                      />
-                      <div className="text-center">
-                        <p className="text-sm text-muted-foreground mb-2">{uploadedFile?.name}</p>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setUploadedImage(null, null)}
-                        >
-                          다른 이미지 선택
-                        </Button>
+          {/* Step 1: Persona Selection - Horizontal */}
+          <div className="mb-12">
+            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2 text-white">
+              <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-white text-black text-sm">
+                1
+              </span>
+              페르소나 선택
+              <span className="text-sm font-normal text-gray-400">(다중 선택 가능)</span>
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {personasData.map((persona) => {
+                const isSelected = selectedPersonas.includes(persona.id)
+                return (
+                  <div
+                    key={persona.id}
+                    onClick={() => togglePersona(persona.id)}
+                    className={cn(
+                      "cursor-pointer text-center p-7 rounded-2xl transition-all backdrop-blur-xl border",
+                      isSelected
+                        ? "bg-white/20 border-white/40 shadow-xl"
+                        : "bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20",
+                    )}
+                  >
+                    {persona.image ? (
+                      <div className="mb-3">
+                        <img
+                          src={persona.image}
+                          alt={persona.name}
+                          className="w-32 h-32 mx-auto object-cover rounded-full"
+                        />
                       </div>
-                    </div>
-                  ) : (
-                    <div className="text-center">
-                      <Upload className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                      <p className="text-lg font-medium mb-2">이미지를 드래그하여 업로드</p>
-                      <p className="text-sm text-muted-foreground mb-4">또는 파일을 선택하세요 (JPG, PNG)</p>
-                      <label>
-                        <Button variant="outline" asChild>
-                          <span>파일 선택</span>
-                        </Button>
-                        <input type="file" accept="image/*" className="hidden" onChange={handleFileSelect} />
-                      </label>
-                    </div>
-                  )}
-                </div>
-
-                {/* Demo Images */}
-                {!uploadedImage && (
-                  <div className="mt-4">
-                    <div className="text-center mb-3">
-                      <p className="text-sm text-muted-foreground">또는 데모 이미지로 빠르게 시작하기</p>
-                    </div>
-                    <div className="grid grid-cols-3 gap-3">
-                      {demoImages.map((demo) => (
-                        <button
-                          key={demo.id}
-                          onClick={() => handleDemoSelect(demo.path, demo.name)}
-                          className="group relative overflow-hidden rounded-lg border-2 border-border hover:border-primary transition-all"
+                    ) : (
+                      <div className="text-4xl mb-3">{persona.emoji}</div>
+                    )}
+                    <div className="font-semibold mb-2 text-white">{persona.name}({persona.age})</div>
+                    <div className="text-xs text-gray-300 mb-3 px-2 leading-relaxed">{persona.description}</div>
+                    <div className="flex flex-wrap gap-1 justify-center mb-2">
+                      {persona.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-gray-300"
                         >
-                          <img
-                            src={demo.path}
-                            alt={demo.name}
-                            className="w-full h-24 object-cover object-top group-hover:scale-105 transition-transform"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2.5">
-                            <div className="text-left w-full">
-                              <div className="flex items-center justify-between">
-                                <p className="text-white font-semibold text-sm">{demo.name}</p>
-                                <span className="text-xs px-2 py-0.5 rounded-full bg-primary text-primary-foreground font-medium">
-                                  데모
-                                </span>
-                              </div>
-                              <p className="text-white/80 text-xs mt-0.5">{demo.description}</p>
-                            </div>
-                          </div>
-                        </button>
+                          {tag}
+                        </span>
                       ))}
                     </div>
+                    <button
+                      onClick={(e) => handleDetailClick(e, persona)}
+                      className="text-xs text-gray-400 hover:text-white hover:underline flex items-center gap-1 mx-auto"
+                    >
+                      <Info className="h-3 w-3" />
+                      자세히
+                    </button>
+                    {isSelected && (
+                      <div className="mt-2 flex justify-center">
+                        <Check className="h-5 w-5 text-white" />
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Step 2: Device and Upload */}
+          <div>
+            <h2 className="text-lg font-semibold mb-6 flex items-center justify-center gap-2 text-white">
+              <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-white text-black text-sm">
+                2
+              </span>
+              디바이스 타입을 고르고 파일을 업로드해주세요
+            </h2>
+
+            {/* Device Selection */}
+            <div className="mb-8">
+              <div className="flex gap-3 max-w-md mx-auto">
+                {devices.map((device) => (
+                  <button
+                    key={device.id}
+                    onClick={() => setSelectedDevice(device.id)}
+                    className={cn(
+                      "flex-1 flex flex-col items-center gap-2 p-4 rounded-xl transition-all backdrop-blur-xl border",
+                      selectedDevice === device.id
+                        ? "bg-white/20 border-white/40 shadow-xl"
+                        : "bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20",
+                    )}
+                  >
+                    <device.icon
+                      className={cn(
+                        "h-6 w-6",
+                        selectedDevice === device.id ? "text-white" : "text-gray-400",
+                      )}
+                    />
+                    <span
+                      className={cn(
+                        "text-sm font-medium",
+                        selectedDevice === device.id ? "text-white" : "text-gray-400",
+                      )}
+                    >
+                      {device.label}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Image Upload */}
+            <div>
+              <div
+                className={cn(
+                  "border-2 border-dashed rounded-2xl p-8 transition-all min-h-[200px] flex items-center justify-center backdrop-blur-xl",
+                  isDragging ? "border-white/40 bg-white/20 shadow-xl" : "border-white/20 hover:border-white/30",
+                  uploadedImage && "border-solid border-white/30 bg-white/10 shadow-lg",
+                )}
+                onDragOver={(e) => {
+                  e.preventDefault()
+                  setIsDragging(true)
+                }}
+                onDragLeave={() => setIsDragging(false)}
+                onDrop={handleDrop}
+              >
+                {uploadedImage ? (
+                  <div className="space-y-4 w-full">
+                    <img
+                      src={uploadedImage}
+                      alt="Uploaded UI"
+                      className="max-h-64 mx-auto rounded-lg shadow-lg"
+                    />
+                    <div className="text-center">
+                      <p className="text-sm text-gray-300 mb-2">{uploadedFile?.name}</p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setUploadedImage(null, null)}
+                        className="border-white/20 text-white hover:bg-white/10"
+                      >
+                        다른 이미지 선택
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center w-full">
+                    <Upload className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                    <p className="text-lg font-medium mb-2 text-white">이미지를 드래그하여 업로드</p>
+                    <p className="text-sm text-gray-400 mb-4">또는 파일을 선택하세요 (JPG, PNG)</p>
+                    <label>
+                      <Button variant="outline" asChild className="border-white/20 text-white hover:bg-white/10">
+                        <span>파일 선택</span>
+                      </Button>
+                      <input type="file" accept="image/*" className="hidden" onChange={handleFileSelect} />
+                    </label>
                   </div>
                 )}
               </div>
 
-              {/* Device Selection */}
-              <div>
-                <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-sm">
-                    2
-                  </span>
-                  디바이스 타입
-                </h2>
-                <div className="flex gap-3">
-                  {devices.map((device) => (
-                    <button
-                      key={device.id}
-                      onClick={() => setSelectedDevice(device.id)}
-                      className={cn(
-                        "flex-1 flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all",
-                        selectedDevice === device.id
-                          ? "border-primary bg-primary/5"
-                          : "border-border hover:border-primary/50",
-                      )}
-                    >
-                      <device.icon
-                        className={cn(
-                          "h-6 w-6",
-                          selectedDevice === device.id ? "text-primary" : "text-muted-foreground",
-                        )}
-                      />
-                      <span
-                        className={cn(
-                          "text-sm font-medium",
-                          selectedDevice === device.id ? "text-primary" : "text-muted-foreground",
-                        )}
+              {/* Demo Images */}
+              {!uploadedImage && (
+                <div className="mt-4">
+                  <div className="text-center mb-3">
+                    <p className="text-sm text-gray-400">또는 데모 이미지로 빠르게 시작하기</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 max-w-md mx-auto">
+                    {demoImages.map((demo) => (
+                      <button
+                        key={demo.id}
+                        onClick={() => handleDemoSelect(demo.path, demo.name)}
+                        className="group relative overflow-hidden rounded-xl border border-white/10 backdrop-blur-xl hover:border-white/20 transition-all"
                       >
-                        {device.label}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Right: Persona Selection */}
-            <div>
-              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-sm">
-                  3
-                </span>
-                페르소나 선택
-                <span className="text-sm font-normal text-muted-foreground">(다중 선택 가능)</span>
-              </h2>
-              <div className="space-y-3">
-                {personasData.map((persona) => {
-                  const isSelected = selectedPersonas.includes(persona.id)
-                  const isOneHandPersona = persona.id === "one-hand"
-                  const isDisabled = isOneHandPersona && selectedDevice === "desktop"
-                  return (
-                    <div
-                      key={persona.id}
-                      onClick={() => !isDisabled && togglePersona(persona.id)}
-                      className={cn(
-                        "w-full text-left p-4 rounded-xl border-2 transition-all relative",
-                        isDisabled
-                          ? "border-border bg-muted/50 cursor-not-allowed opacity-60"
-                          : isSelected
-                            ? "border-primary bg-primary/5 cursor-pointer"
-                            : "border-border hover:border-primary/50 cursor-pointer",
-                      )}
-                    >
-                      {/* Mobile/Tablet only badge */}
-                      {isOneHandPersona && (
-                        <div className="absolute -top-2 right-3 px-2 py-0.5 rounded-full bg-orange-100 dark:bg-orange-900/30 border border-orange-300 dark:border-orange-700">
-                          <span className="text-[10px] font-medium text-orange-700 dark:text-orange-300">
-                            📱 Mobile / Tablet 전용
-                          </span>
-                        </div>
-                      )}
-                      <div className="flex items-start gap-4">
                         <img
-                          src={persona.image}
-                          alt={persona.name}
-                          className={cn("w-12 h-12 rounded-full object-cover", isDisabled && "grayscale")}
+                          src={demo.path}
+                          alt={demo.name}
+                          className="w-full h-24 object-cover object-top group-hover:scale-105 transition-transform"
                         />
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-baseline gap-2">
-                              <span className={cn("font-semibold", isDisabled && "text-muted-foreground")}>{persona.name}</span>
-                              <span className="text-sm text-muted-foreground">{persona.age}</span>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-2.5">
+                          <div className="text-left w-full">
+                            <div className="flex items-center justify-between">
+                              <p className="text-white font-semibold text-sm">{demo.name}</p>
+                              <span className="text-xs px-2 py-0.5 rounded-full bg-white/20 backdrop-blur-sm text-white font-medium">
+                                데모
+                              </span>
                             </div>
-                            <div
-                              className={cn(
-                                "w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all",
-                                isDisabled
-                                  ? "border-muted-foreground/50 bg-muted"
-                                  : isSelected
-                                    ? "border-primary bg-primary"
-                                    : "border-muted-foreground",
-                              )}
-                            >
-                              {isSelected && !isDisabled && <Check className="h-3 w-3 text-primary-foreground" />}
-                            </div>
-                          </div>
-                          <p className="text-sm text-muted-foreground mt-1">{persona.description}</p>
-                          <div className="flex items-center justify-between mt-2">
-                            <div className="flex flex-wrap gap-1">
-                              {persona.tags.map((tag) => (
-                                <span
-                                  key={tag}
-                                  className={cn(
-                                    "text-xs px-2 py-0.5 rounded-full",
-                                    isDisabled ? "bg-muted/50 text-muted-foreground/50" : "bg-muted text-muted-foreground"
-                                  )}
-                                >
-                                  {tag}
-                                </span>
-                              ))}
-                            </div>
-                            <button
-                              onClick={(e) => handleDetailClick(e, persona)}
-                              className={cn(
-                                "flex items-center gap-1 text-xs hover:underline",
-                                isDisabled ? "text-muted-foreground" : "text-primary"
-                              )}
-                            >
-                              <Info className="h-3 w-3" />
-                              자세히 보기
-                            </button>
+                            <p className="text-white/80 text-xs mt-0.5">{demo.description}</p>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
           {/* Action Button */}
-          <div className="mt-8 text-center">
-            <Button size="lg" disabled={!isReadyToAnalyze} onClick={handleAnalyze} className="gap-2 px-8">
-              <Eye className="h-5 w-5" />
+          <div className="mt-12 py-8 text-center bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl">
+            <Button
+              size="lg"
+              disabled={!isReadyToAnalyze}
+              onClick={handleAnalyze}
+              className="gap-2 px-16 py-7 text-xl font-bold rounded-full shadow-2xl hover:shadow-[0_0_40px_rgba(255,255,255,0.3)] transition-all bg-white/10 backdrop-blur-xl border-2 border-white/30 text-white hover:bg-white/20 hover:border-white/50 hover:scale-105"
+            >
               UX 진단 시작하기
               {selectedPersonas.length > 0 && (
-                <span className="ml-1 px-2 py-0.5 rounded-full bg-primary-foreground/20 text-sm">
+                <span className="ml-2 px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-sm text-base font-bold border border-white/30">
                   {selectedPersonas.length}명
                 </span>
               )}
             </Button>
             {!isReadyToAnalyze && (
-              <p className="text-sm text-muted-foreground mt-3">
+              <p className="text-sm text-gray-400 mt-4">
                 이미지를 업로드하고 최소 1명의 페르소나를 선택해주세요.
               </p>
             )}
@@ -482,22 +450,26 @@ export default function Analyze() {
             <>
               <DialogHeader>
                 <div className="flex items-center gap-4 mb-4">
-                  <img
+                  {selectedPersonaDetail.image ? (
+                    <img
                       src={selectedPersonaDetail.image}
                       alt={selectedPersonaDetail.name}
-                      className="w-16 h-16 rounded-full object-cover"
+                      className="w-32 h-32 object-cover rounded-full"
+                      style={{ filter: 'grayscale(100%) contrast(1.2)' }}
                     />
+                  ) : (
+                    <div className="text-5xl">{selectedPersonaDetail.emoji}</div>
+                  )}
                   <div>
                     <DialogTitle className="text-2xl mb-1">
-                      {selectedPersonaDetail.name}
-                      <span className="text-lg text-muted-foreground ml-2">{selectedPersonaDetail.age}</span>
+                      {selectedPersonaDetail.name}({selectedPersonaDetail.age})
                     </DialogTitle>
                     <DialogDescription className="text-base">{selectedPersonaDetail.description}</DialogDescription>
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {selectedPersonaDetail.tags.map((tag) => (
-                    <span key={tag} className="text-xs px-3 py-1 rounded-full bg-primary/10 text-primary font-medium">
+                    <span key={tag} className="text-xs px-3 py-1 rounded-full bg-gray-100 text-gray-700 font-medium">
                       {tag}
                     </span>
                   ))}
@@ -518,8 +490,8 @@ export default function Analyze() {
                   <ul className="space-y-2">
                     {selectedPersonaDetail.painPoints.map((point, index) => (
                       <li key={index} className="flex gap-3">
-                        <span className="text-primary mt-1 flex-shrink-0">•</span>
-                        <span className="text-sm text-muted-foreground">{point}</span>
+                        <span className="text-gray-700 mt-1 flex-shrink-0">•</span>
+                        <span className="text-sm text-gray-600">{point}</span>
                       </li>
                     ))}
                   </ul>
@@ -528,13 +500,13 @@ export default function Analyze() {
                 {/* Ability */}
                 <div className="bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-950/20 dark:to-blue-950/20 rounded-lg p-5 border border-purple-200 dark:border-purple-800">
                   <h3 className="font-bold text-lg mb-2">{selectedPersonaDetail.ability.title}</h3>
-                  <p className="text-sm text-muted-foreground mb-4">{selectedPersonaDetail.ability.description}</p>
+                  <p className="text-sm text-gray-600 mb-4">{selectedPersonaDetail.ability.description}</p>
                   <div className="bg-white dark:bg-gray-900 rounded-lg p-4">
-                    <h4 className="font-semibold text-sm mb-3 text-primary">시각적 효과:</h4>
+                    <h4 className="font-semibold text-sm mb-3 text-gray-700">시각적 효과:</h4>
                     <ul className="space-y-2">
                       {selectedPersonaDetail.ability.effects.map((effect, index) => (
                         <li key={index} className="flex gap-3">
-                          <span className="text-primary mt-1 flex-shrink-0">•</span>
+                          <span className="text-gray-700 mt-1 flex-shrink-0">•</span>
                           <span className="text-sm">{effect}</span>
                         </li>
                       ))}
