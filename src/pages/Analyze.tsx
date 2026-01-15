@@ -134,8 +134,9 @@ const devices = [
 ];
 
 const demoImages = [
-  { id: 'daum', path: '/demo_daum.png', name: '다음', description: '데모 • 모바일 앱' },
-  { id: 'naver', path: '/demo_naver.png', name: '네이버', description: '데모 • 모바일 앱' },
+  { id: 'daum', path: '/demo_daum.png', name: '다음', description: '데모 • 모바일 앱', device: 'desktop' as const },
+  { id: 'naver', path: '/demo_naver.png', name: '네이버', description: '데모 • 모바일 앱', device: 'desktop' as const },
+  { id: 'youtube', path: '/demo_youtube.jpg', name: '유튜브', description: '데모 • 모바일 앱', device: 'mobile' as const },
 ];
 
 export default function Analyze() {
@@ -184,7 +185,7 @@ export default function Analyze() {
   );
 
   const handleDemoSelect = useCallback(
-    async (demoPath: string, demoName: string) => {
+    async (demoPath: string, demoName: string, device: string) => {
       try {
         const response = await fetch(demoPath);
         const blob = await response.blob();
@@ -192,13 +193,14 @@ export default function Analyze() {
         reader.onload = () => {
           const file = new File([blob], demoName, { type: blob.type });
           setUploadedImage(reader.result as string, file);
+          setSelectedDevice(device);
         };
         reader.readAsDataURL(blob);
       } catch (error) {
         console.error('Failed to load demo image:', error);
       }
     },
-    [setUploadedImage]
+    [setUploadedImage, setSelectedDevice]
   );
 
   const handleAnalyze = () => {
@@ -486,11 +488,11 @@ export default function Analyze() {
                   <div className='text-center mb-3'>
                     <p className='text-sm text-gray-400'>또는 데모 이미지로 빠르게 시작하기</p>
                   </div>
-                  <div className='grid grid-cols-2 gap-3 max-w-md mx-auto'>
+                  <div className='grid grid-cols-3 gap-3 max-w-md mx-auto'>
                     {demoImages.map((demo) => (
                       <button
                         key={demo.id}
-                        onClick={() => handleDemoSelect(demo.path, demo.name)}
+                        onClick={() => handleDemoSelect(demo.path, demo.name, demo.device)}
                         className='group relative overflow-hidden rounded-xl border border-white/10 backdrop-blur-xl hover:border-white/20 transition-all'
                       >
                         <img

@@ -45,9 +45,9 @@ export default function Loading() {
     const progressInterval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 95) return 95; // Cap at 95% until actual completion
-        return prev + 2;
+        return prev + 1;
       });
-    }, 100);
+    }, 150);
 
     // Analyze and navigate
     const runAnalysis = async () => {
