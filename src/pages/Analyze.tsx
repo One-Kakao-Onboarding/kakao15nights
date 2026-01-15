@@ -366,30 +366,48 @@ export default function Analyze() {
               <div className="space-y-3">
                 {personasData.map((persona) => {
                   const isSelected = selectedPersonas.includes(persona.id)
+                  const isOneHandPersona = persona.id === "one-hand"
+                  const isDisabled = isOneHandPersona && selectedDevice === "desktop"
                   return (
                     <div
                       key={persona.id}
-                      onClick={() => togglePersona(persona.id)}
+                      onClick={() => !isDisabled && togglePersona(persona.id)}
                       className={cn(
-                        "w-full text-left p-4 rounded-xl border-2 transition-all cursor-pointer",
-                        isSelected ? "border-primary bg-primary/5" : "border-border hover:border-primary/50",
+                        "w-full text-left p-4 rounded-xl border-2 transition-all relative",
+                        isDisabled
+                          ? "border-border bg-muted/50 cursor-not-allowed opacity-60"
+                          : isSelected
+                            ? "border-primary bg-primary/5 cursor-pointer"
+                            : "border-border hover:border-primary/50 cursor-pointer",
                       )}
                     >
+                      {/* Mobile/Tablet only badge */}
+                      {isOneHandPersona && (
+                        <div className="absolute -top-2 right-3 px-2 py-0.5 rounded-full bg-orange-100 dark:bg-orange-900/30 border border-orange-300 dark:border-orange-700">
+                          <span className="text-[10px] font-medium text-orange-700 dark:text-orange-300">
+                            📱 Mobile / Tablet 전용
+                          </span>
+                        </div>
+                      )}
                       <div className="flex items-start gap-4">
-                        <div className="text-3xl">{persona.emoji}</div>
+                        <div className={cn("text-3xl", isDisabled && "grayscale")}>{persona.emoji}</div>
                         <div className="flex-1">
                           <div className="flex items-center justify-between">
                             <div className="flex items-baseline gap-2">
-                              <span className="font-semibold">{persona.name}</span>
+                              <span className={cn("font-semibold", isDisabled && "text-muted-foreground")}>{persona.name}</span>
                               <span className="text-sm text-muted-foreground">{persona.age}</span>
                             </div>
                             <div
                               className={cn(
                                 "w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all",
-                                isSelected ? "border-primary bg-primary" : "border-muted-foreground",
+                                isDisabled
+                                  ? "border-muted-foreground/50 bg-muted"
+                                  : isSelected
+                                    ? "border-primary bg-primary"
+                                    : "border-muted-foreground",
                               )}
                             >
-                              {isSelected && <Check className="h-3 w-3 text-primary-foreground" />}
+                              {isSelected && !isDisabled && <Check className="h-3 w-3 text-primary-foreground" />}
                             </div>
                           </div>
                           <p className="text-sm text-muted-foreground mt-1">{persona.description}</p>
@@ -398,7 +416,10 @@ export default function Analyze() {
                               {persona.tags.map((tag) => (
                                 <span
                                   key={tag}
-                                  className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground"
+                                  className={cn(
+                                    "text-xs px-2 py-0.5 rounded-full",
+                                    isDisabled ? "bg-muted/50 text-muted-foreground/50" : "bg-muted text-muted-foreground"
+                                  )}
                                 >
                                   {tag}
                                 </span>
@@ -406,7 +427,10 @@ export default function Analyze() {
                             </div>
                             <button
                               onClick={(e) => handleDetailClick(e, persona)}
-                              className="flex items-center gap-1 text-xs text-primary hover:underline"
+                              className={cn(
+                                "flex items-center gap-1 text-xs hover:underline",
+                                isDisabled ? "text-muted-foreground" : "text-primary"
+                              )}
                             >
                               <Info className="h-3 w-3" />
                               자세히 보기

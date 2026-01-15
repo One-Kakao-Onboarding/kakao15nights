@@ -17,6 +17,7 @@ export default function Results() {
   const [enableElderlyVision, setEnableElderlyVision] = useState(false)
   const [enableBlindSpot, setEnableBlindSpot] = useState(false)
   const [enableLocalBlocker, setEnableLocalBlocker] = useState(false)
+  const [enableThumbZone, setEnableThumbZone] = useState(false)
 
   useEffect(() => {
     if (!results) {
@@ -55,6 +56,15 @@ export default function Results() {
       }
     }
   }, [enableLocalBlocker, results])
+
+  useEffect(() => {
+    if (enableThumbZone) {
+      const oneHandIndex = results?.personas.findIndex(p => p.name.includes('김민석') || p.name.includes('취준생'))
+      if (oneHandIndex !== undefined && oneHandIndex !== -1) {
+        setActivePersonaIndex(oneHandIndex)
+      }
+    }
+  }, [enableThumbZone, results])
 
   const handleNewAnalysis = () => {
     reset()
@@ -202,7 +212,7 @@ export default function Results() {
                 <img
                   src={results.image}
                   alt="Analyzed UI"
-                  className="w-full rounded-lg"
+                  className="max-h-[70vh] w-auto max-w-full rounded-lg object-contain"
                 />
 
                 {/* Elderly Vision Simulator Overlays */}
@@ -273,8 +283,40 @@ export default function Results() {
                   </div>
                 )}
 
+                {/* Thumb Zone Overlays */}
+                {enableThumbZone && activePersona && (activePersona.name.includes('김민석') || activePersona.name.includes('취준생')) && (
+                  <div className="absolute inset-0 pointer-events-none rounded-lg overflow-hidden">
+                    {activePersona.coordinates.map((coord, idx) => {
+                      const isUpperZone = coord.y < 0.3
+                      const isMiddleZone = coord.y >= 0.3 && coord.y < 0.6
+                      return (
+                        <div
+                          key={`thumb-${idx}`}
+                          className="absolute transition-all duration-300"
+                          style={{
+                            top: `${coord.y * 100}%`,
+                            left: `${coord.x * 100}%`,
+                            width: `${coord.width * 100}%`,
+                            height: `${coord.height * 100}%`,
+                            backgroundColor: isUpperZone ? 'rgba(239, 68, 68, 0.25)' : isMiddleZone ? 'rgba(234, 179, 8, 0.2)' : 'rgba(34, 197, 94, 0.15)',
+                            border: `2px solid ${isUpperZone ? '#ef4444' : isMiddleZone ? '#eab308' : '#22c55e'}`,
+                            borderRadius: '4px',
+                          }}
+                        >
+                          <div className={cn(
+                            "absolute -top-5 left-0 text-white text-[10px] font-bold px-1.5 py-0.5 rounded shadow whitespace-nowrap",
+                            isUpperZone ? "bg-red-500" : isMiddleZone ? "bg-yellow-500" : "bg-green-500"
+                          )}>
+                            {isUpperZone ? '👆 어려움' : isMiddleZone ? '👆 불편' : '👆 편함'}
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+
                 {/* Red Pen Overlay */}
-                {activeCoordinate && !enableElderlyVision && !enableBlindSpot && !enableLocalBlocker && (
+                {activeCoordinate && !enableElderlyVision && !enableBlindSpot && !enableLocalBlocker && !enableThumbZone && (
                   <div
                     className="absolute border-2 border-red-500 bg-red-500/10 rounded transition-all duration-300"
                     style={{
@@ -330,8 +372,25 @@ export default function Results() {
                 </div>
               )}
 
+              {/* Thumb Zone Info */}
+              {enableThumbZone && activePersona && (activePersona.name.includes('김민석') || activePersona.name.includes('취준생')) && (
+                <div className="mt-4 p-3 bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-800 rounded-lg">
+                  <p className="text-sm text-orange-900 dark:text-orange-100 flex items-center gap-2">
+                    <span className="text-lg">👆</span>
+                    <span>
+                      <strong>Thumb Zone 활성화:</strong> 한 손 조작 시 엄지가 닿기 어려운 영역을 표시합니다.
+                      <span className="inline-flex items-center gap-1 ml-1">
+                        <span className="inline-block w-3 h-3 rounded bg-red-500"></span>닿기 어려움
+                        <span className="inline-block w-3 h-3 rounded bg-yellow-500 ml-2"></span>불편함
+                        <span className="inline-block w-3 h-3 rounded bg-green-500 ml-2"></span>편함
+                      </span>
+                    </span>
+                  </p>
+                </div>
+              )}
+
               {/* Feedback Navigation */}
-              {!enableElderlyVision && !enableBlindSpot && !enableLocalBlocker && (
+              {!enableElderlyVision && !enableBlindSpot && !enableLocalBlocker && !enableThumbZone && (
                 <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
                   <Button
                     variant="outline"
@@ -452,6 +511,7 @@ export default function Results() {
                         setEnableElderlyVision(!enableElderlyVision)
                         setEnableBlindSpot(false)
                         setEnableLocalBlocker(false)
+                        setEnableThumbZone(false)
                       }}
                     >
                       👵 노안 시뮬레이터 {enableElderlyVision ? 'OFF' : 'ON'}
@@ -473,6 +533,7 @@ export default function Results() {
                         setEnableBlindSpot(!enableBlindSpot)
                         setEnableElderlyVision(false)
                         setEnableLocalBlocker(false)
+                        setEnableThumbZone(false)
                       }}
                     >
                       📱 블라인드 스팟 {enableBlindSpot ? 'OFF' : 'ON'}
@@ -494,9 +555,32 @@ export default function Results() {
                         setEnableLocalBlocker(!enableLocalBlocker)
                         setEnableElderlyVision(false)
                         setEnableBlindSpot(false)
+                        setEnableThumbZone(false)
                       }}
                     >
                       🌏 로컬 블로커 {enableLocalBlocker ? 'OFF' : 'ON'}
+                    </Button>
+                  </div>
+                )}
+
+                {/* Thumb Zone Toggle - Only for One-Hand User */}
+                {(activePersona.name.includes('김민석') || activePersona.name.includes('취준생')) && (
+                  <div className="mb-6">
+                    <Button
+                      variant={enableThumbZone ? "default" : "outline"}
+                      size="sm"
+                      className={cn(
+                        "w-full gap-2",
+                        enableThumbZone && "bg-orange-500 hover:bg-orange-600 text-white"
+                      )}
+                      onClick={() => {
+                        setEnableThumbZone(!enableThumbZone)
+                        setEnableElderlyVision(false)
+                        setEnableBlindSpot(false)
+                        setEnableLocalBlocker(false)
+                      }}
+                    >
+                      🚌 Thumb Zone {enableThumbZone ? 'OFF' : 'ON'}
                     </Button>
                   </div>
                 )}
