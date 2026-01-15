@@ -137,7 +137,7 @@ function createMockResults(image: string, personas: string[], device: string) {
       emoji: string;
       score: number;
       feedback: string[];
-      coordinates: number[][];
+      coordinates: { x: number; y: number; width: number; height: number }[];
     }
   > = {
     grandmother: {
@@ -150,9 +150,9 @@ function createMockResults(image: string, personas: string[], device: string) {
         '메뉴라는 글씨가 영어로 되어있어서 무슨 뜻인지 모르겠어요.',
       ],
       coordinates: [
-        [50, 20, 150, 200],
-        [200, 300, 250, 400],
-        [10, 10, 60, 80],
+        { x: 0.1, y: 0.05, width: 0.3, height: 0.08 },
+        { x: 0.5, y: 0.3, width: 0.2, height: 0.06 },
+        { x: 0.02, y: 0.02, width: 0.15, height: 0.04 },
       ],
     },
     adhd: {
@@ -165,9 +165,9 @@ function createMockResults(image: string, personas: string[], device: string) {
         '클릭해야 할 게 너무 많아요. 한 번에 끝낼 수 있게 해주세요.',
       ],
       coordinates: [
-        [100, 50, 300, 400],
-        [0, 0, 50, 500],
-        [350, 200, 400, 350],
+        { x: 0.1, y: 0.15, width: 0.7, height: 0.3 },
+        { x: 0, y: 0, width: 1, height: 0.08 },
+        { x: 0.4, y: 0.5, width: 0.3, height: 0.08 },
       ],
     },
     'one-hand': {
@@ -180,9 +180,9 @@ function createMockResults(image: string, personas: string[], device: string) {
         '뒤로가기 버튼이 왼쪽 상단에 있어서 한 손으로는 닿지 않아요.',
       ],
       coordinates: [
-        [10, 10, 60, 100],
-        [300, 150, 380, 250],
-        [5, 5, 45, 55],
+        { x: 0.02, y: 0.02, width: 0.18, height: 0.06 },
+        { x: 0.3, y: 0.4, width: 0.2, height: 0.1 },
+        { x: 0.01, y: 0.01, width: 0.1, height: 0.05 },
       ],
     },
     foreigner: {
@@ -195,9 +195,9 @@ function createMockResults(image: string, personas: string[], device: string) {
         "The authentication requires a Korean phone number, which I don't have.",
       ],
       coordinates: [
-        [150, 100, 300, 350],
-        [0, 0, 50, 500],
-        [200, 400, 280, 480],
+        { x: 0.2, y: 0.15, width: 0.5, height: 0.2 },
+        { x: 0, y: 0, width: 1, height: 0.08 },
+        { x: 0.8, y: 0.5, width: 0.15, height: 0.1 },
       ],
     },
   };
