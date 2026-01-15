@@ -1,7 +1,7 @@
 import type { DragEvent, ChangeEvent } from 'react';
 import { useState, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Eye, Upload, ArrowLeft, Monitor, Smartphone, Tablet, Info } from 'lucide-react';
+import { Eye, Upload, Monitor, Smartphone, Tablet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useAnalysisStore } from '@/store/analysis';
@@ -218,27 +218,45 @@ export default function Analyze() {
   return (
     <div className='min-h-screen bg-gradient-radial'>
       {/* Header */}
-      <header className='border-b border-white/10 bg-black/50 backdrop-blur-xl sticky top-0 z-50'>
+      <header className='border-b border-white/10 backdrop-blur-xl sticky top-0 z-50'>
         <div className='container mx-auto flex h-16 items-center justify-between px-4'>
           <Link to='/' className='flex items-center gap-2'>
             <Eye className='h-6 w-6 text-white' />
             <span className='text-xl font-bold text-white'>UX-Ray</span>
           </Link>
-          <nav className='flex items-center gap-1'>
+          <nav>
             <Link to='/features'>
-              <Button variant='ghost' size='sm' className='text-gray-300 hover:text-white hover:bg-white/10'>
+              <Button
+                variant='ghost'
+                size='sm'
+                className='text-md text-gray-300 hover:text-white hover:bg-white/10'
+              >
                 기능
               </Button>
             </Link>
             <Link to='/how-to-use'>
-              <Button variant='ghost' size='sm' className='text-gray-300 hover:text-white hover:bg-white/10'>
+              <Button
+                variant='ghost'
+                size='sm'
+                className='text-md text-gray-300 hover:text-white hover:bg-white/10'
+              >
                 사용법
               </Button>
             </Link>
+            <Link to='/social-value'>
+              <Button
+                variant='ghost'
+                size='sm'
+                className='text-md text-gray-300 hover:text-white hover:bg-white/10'
+              >
+                사회적 가치
+              </Button>
+            </Link>
+          </nav>
+          <nav className='flex items-center gap-1'>
             <Link to='/'>
               <Button variant='ghost' size='sm' className='gap-2 text-white hover:bg-white/10'>
-                <ArrowLeft className='h-4 w-4' />
-                홈으로
+                홈
               </Button>
             </Link>
           </nav>
@@ -246,24 +264,24 @@ export default function Analyze() {
       </header>
 
       <main className='container mx-auto py-8 px-4'>
-        <div>
+        <div className='flex flex-col gap-2'>
           <div className='text-center mb-8'>
             <h1 className='text-3xl font-bold mb-2 text-white'>UX 진단 시작하기</h1>
             <p className='text-gray-400'>
-              UI 스크린샷을 업로드하고, 진단받을 페르소나를 선택하세요.
+              할머니의 흐릿한 시선부터 외국인의 낯선 경험까지, 필요한 관점을 골라보세요.
             </p>
           </div>
 
           {/* Step 1: Persona Selection - Horizontal */}
           <div className='mb-12'>
             <h2 className='text-lg font-semibold mb-4 flex items-center gap-2 text-white'>
-              <span className='inline-flex items-center justify-center w-6 h-6 rounded-full bg-white text-black text-sm'>
+              <span className='inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-500/70 text-white text-sm'>
                 1
               </span>
               페르소나 선택
               <span className='text-sm font-normal text-gray-400'>(다중 선택 가능)</span>
             </h2>
-            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
+            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10'>
               {personasData.map((persona) => {
                 const isSelected = selectedPersonas.includes(persona.id);
                 const isOneHandPersona = persona.id === 'one-hand';
@@ -273,62 +291,70 @@ export default function Analyze() {
                     key={persona.id}
                     onClick={() => !isDisabled && togglePersona(persona.id)}
                     className={cn(
-                      'cursor-pointer text-center p-7 rounded-2xl backdrop-blur-xl border relative',
+                      'cursor-pointer text-center p-6 rounded-2xl border relative',
                       'transition-all duration-300 ease-out',
                       isDisabled
-                        ? 'bg-white/5 border-white/10 cursor-not-allowed opacity-50'
+                        ? 'bg-white/[0.02] border-white/5 cursor-not-allowed opacity-40'
                         : isSelected
-                        ? 'bg-white/10 border-white/60 shadow-[0_0_30px_rgba(255,255,255,0.15)] scale-[1.02]'
-                        : 'bg-white/5 border-white/20 hover:bg-white/8 hover:border-white/40 hover:scale-[1.01] hover:shadow-[0_0_20px_rgba(255,255,255,0.1)]'
+                        ? 'bg-gradient-to-b from-white/25 to-white/15 border-white/40 shadow-[0_0_50px_rgba(255,255,255,0.12)] scale-[1.02]'
+                        : 'bg-white/[0.02] border-white/[0.08] hover:bg-white/[0.05] hover:border-white/20 hover:scale-[1.01]'
                     )}
-                    style={{
-                      ...(isSelected && !isDisabled ? {
-                        background: 'linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.05) 100%)',
-                      } : {})
-                    }}
                   >
                     {/* Mobile/Tablet only badge */}
                     {isOneHandPersona && (
-                      <div className='absolute -top-2 right-3 px-2 py-0.5 rounded-full bg-orange-500/20 border border-orange-500/30'>
-                        <span className='text-[10px] font-medium text-orange-300'>
-                          📱 Mobile / Tablet 전용
+                      <div className='absolute -top-4 right-1 px-2 py-0.5 rounded-full bg-red-500/50 border border-red-500/30'>
+                        <span className='text-[14px] font-medium text-red-300 mr-2 ml-2'>
+                          Mobile / Tablet 전용
                         </span>
                       </div>
                     )}
-                    <div className='mb-3'>
-                      <img
-                        src={persona.image}
-                        alt={persona.name}
+                    <div className='mb-4 mt-5'>
+                      <div
                         className={cn(
-                          'w-32 h-32 mx-auto object-cover rounded-full transition-all duration-300',
-                          isDisabled && 'grayscale',
-                          isSelected && !isDisabled && 'ring-2 ring-white/50 ring-offset-2 ring-offset-transparent'
+                          'w-32 h-32 mx-auto rounded-full p-1 transition-all duration-300',
+                          isSelected && !isDisabled
+                            ? 'bg-gradient-to-br from-white/20 via-white/10 to-transparent'
+                            : 'bg-transparent'
                         )}
-                      />
+                      >
+                        <img
+                          src={persona.image}
+                          alt={persona.name}
+                          className={cn(
+                            'w-full h-full object-cover rounded-full transition-all duration-300',
+                            isDisabled && 'grayscale opacity-50',
+                            isSelected && !isDisabled && 'brightness-110'
+                          )}
+                        />
+                      </div>
                     </div>
                     <div
                       className={cn(
-                        'text-lg font-bold mb-2 transition-colors duration-300',
-                        isDisabled ? 'text-gray-500' : 'text-white'
+                        'text-xl font-bold mb-2 transition-colors duration-300',
+                        isDisabled ? 'text-gray-600' : 'text-white'
                       )}
                     >
                       {persona.name}({persona.age})
                     </div>
                     <div
                       className={cn(
-                        'text-sm mb-3 px-2 leading-relaxed transition-colors duration-300',
-                        isDisabled ? 'text-gray-600' : 'text-white/80'
+                        'text-sm mb-4 px-1 leading-relaxed transition-colors duration-300 break-keep',
+                        isDisabled ? 'text-gray-700' : 'text-white/80'
                       )}
                     >
                       {persona.description}
                     </div>
-                    <div className='flex flex-wrap gap-1.5 justify-center mb-3'>
+                    <div className='flex flex-wrap gap-2.5 justify-center mb-4'>
                       {persona.tags.map((tag) => (
                         <span
                           key={tag}
                           className={cn(
-                            'text-sm px-2.5 py-1 rounded-full transition-colors duration-300',
-                            isDisabled ? 'bg-white/5 text-gray-600' : 'bg-white/15 text-white/90'
+                            'text-md px-2.5 py-1 rounded-full transition-all duration-300 opacity-70',
+                            isDisabled
+                              ? 'bg-white/[0.02] text-gray-700 border border-white/5'
+                              : isSelected
+                              ? 'bg-white/20 text-white border border-white/30'
+                              : 'bg-white/[0.3] text-white/100 border border-white/10'
                           )}
                         >
                           {tag}
@@ -338,11 +364,12 @@ export default function Analyze() {
                     <button
                       onClick={(e) => handleDetailClick(e, persona)}
                       className={cn(
-                        'text-sm hover:underline flex items-center gap-1 mx-auto transition-colors duration-300',
-                        isDisabled ? 'text-gray-600' : 'text-gray-300 hover:text-white'
+                        'text-sm flex items-center gap-1 mx-auto transition-all duration-300 border-b border-white/50 mb-5',
+                        isDisabled
+                          ? 'text-gray-700 cursor-not-allowed'
+                          : 'text-white/60 hover:text-white'
                       )}
                     >
-                      <Info className='h-4 w-4' />
                       자세히 보기
                     </button>
                   </div>
@@ -354,7 +381,7 @@ export default function Analyze() {
           {/* Step 2: Device and Upload */}
           <div>
             <h2 className='text-lg font-semibold mb-6 flex items-center gap-2 text-white'>
-              <span className='inline-flex items-center justify-center w-6 h-6 rounded-full bg-white text-black text-sm'>
+              <span className='inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-500/70 text-white text-sm'>
                 2
               </span>
               디바이스 타입을 고르고 파일을 업로드해주세요
@@ -518,7 +545,7 @@ export default function Analyze() {
 
       {/* Persona Detail Dialog */}
       <Dialog open={!!selectedPersonaDetail} onOpenChange={() => setSelectedPersonaDetail(null)}>
-        <DialogContent className='max-w-3xl max-h-[80vh] overflow-y-auto bg-black border border-white/20'>
+        <DialogContent className='max-w-3xl max-h-[80vh] overflow-y-auto bg-black/95 backdrop-blur-md border border-white/20 rounded-3xl [&>button]:text-white'>
           {selectedPersonaDetail && (
             <>
               <DialogHeader>
@@ -541,7 +568,7 @@ export default function Analyze() {
                   {selectedPersonaDetail.tags.map((tag) => (
                     <span
                       key={tag}
-                      className='text-xs px-3 py-1 rounded-full bg-white/10 text-white font-medium'
+                      className='text-sm px-3 py-1 rounded-full bg-white/10 text-white font-medium'
                     >
                       {tag}
                     </span>
@@ -572,7 +599,9 @@ export default function Analyze() {
 
                 {/* Ability */}
                 <div className='bg-gradient-to-br from-purple-500/10 to-blue-500/10 rounded-lg p-5 border border-purple-500/30'>
-                  <h3 className='font-bold text-lg mb-2 text-white'>{selectedPersonaDetail.ability.title}</h3>
+                  <h3 className='font-bold text-lg mb-2 text-white'>
+                    {selectedPersonaDetail.ability.title}
+                  </h3>
                   <p className='text-sm text-gray-300 mb-4'>
                     {selectedPersonaDetail.ability.description}
                   </p>

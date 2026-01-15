@@ -298,13 +298,28 @@ export interface AnalysisResults {
   overallScore: number;
 }
 
+// 점수를 후하게 조정하는 함수 (문제 개수 기반)
+function adjustScore(rawScore: number, feedbackCount: number): number {
+  // 문제가 적을수록 보너스 점수 부여
+  let bonus = 0;
+  if (feedbackCount <= 2) bonus = 15;
+  else if (feedbackCount <= 3) bonus = 10;
+  else if (feedbackCount <= 4) bonus = 5;
+
+  // 기본 10점 보너스 + 문제 개수 기반 보너스
+  const adjustedScore = rawScore + 10 + bonus;
+
+  // 최대 95점으로 제한 (100점은 완벽한 경우만)
+  return Math.min(adjustedScore, 95);
+}
+
 function createFallbackResult(personaId: string): PersonaResult {
   const fallbackData: Record<
     string,
     { score: number; feedback: string[]; coordinates: Coordinate[] }
   > = {
     grandmother: {
-      score: 65,
+      score: 78,
       feedback: [
         '글씨가 너무 작아서 눈이 아프네요.',
         '이 버튼은 뭔가요? 설명이 없어서 누르기가 무서워요.',
@@ -317,7 +332,7 @@ function createFallbackResult(personaId: string): PersonaResult {
       ],
     },
     adhd: {
-      score: 72,
+      score: 82,
       feedback: [
         '정보가 너무 많아서 뭘 봐야 할지 모르겠어요.',
         '이 디자인 좀 올드하네요.',
@@ -330,7 +345,7 @@ function createFallbackResult(personaId: string): PersonaResult {
       ],
     },
     'one-hand': {
-      score: 58,
+      score: 75,
       feedback: [
         '이 버튼이 너무 위에 있어서 엄지로 누르기 힘들어요.',
         '버튼들이 너무 작고 붙어있어서 잘못 누를 것 같아요.',
@@ -343,11 +358,11 @@ function createFallbackResult(personaId: string): PersonaResult {
       ],
     },
     foreigner: {
-      score: 45,
+      score: 68,
       feedback: [
-        "This text is embedded in an image, so I can't translate it.",
-        "I can't find an English language option.",
-        'The authentication requires a Korean phone number.',
+        "아... 이 텍스트는 이미지 안에 있어서 저는 번역 못 해요.",
+        "English 버튼은 어디 있어요? 제가 못 찾겠어요.",
+        '본인인증? 이거 한국 전화번호 필요해요. 저는 없어서 여기서 멈췄어요.',
       ],
       coordinates: [
         { x: 0.2, y: 0.15, width: 0.5, height: 0.2 },
@@ -417,10 +432,14 @@ export async function analyzeImage(
         if (jsonMatch) {
           const parsed = JSON.parse(jsonMatch[0]);
           const info = personaInfo[personaId];
+          const feedbackList = parsed.feedback || [];
+          // 점수를 후하게 조정
+          const rawScore = parsed.score || 70;
+          const adjustedScore = adjustScore(rawScore, feedbackList.length);
           return {
             ...info,
-            score: parsed.score || 70,
-            feedback: parsed.feedback || [],
+            score: adjustedScore,
+            feedback: feedbackList,
             coordinates: parsed.coordinates || [],
           };
         }

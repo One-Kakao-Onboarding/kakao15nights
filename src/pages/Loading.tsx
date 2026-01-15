@@ -47,7 +47,7 @@ export default function Loading() {
         if (prev >= 95) return 95; // Cap at 95% until actual completion
         return prev + 1;
       });
-    }, 150);
+    }, 200);
 
     // Analyze and navigate
     const runAnalysis = async () => {
@@ -121,30 +121,30 @@ export default function Loading() {
       <div className='min-h-screen bg-black flex flex-col items-center justify-center p-8'>
         <div className='text-center max-w-md'>
           {/* Logo */}
-          <div className='flex items-center justify-center gap-2 mb-12'>
-            <Eye className='h-8 w-8 text-white' />
-            <span className='text-2xl font-bold text-white'>UX-Ray</span>
+          <div className='flex items-center justify-center gap-3 mb-12'>
+            <Eye className='h-10 w-10 text-white' />
+            <span className='text-3xl font-bold text-white'>UX-Ray</span>
           </div>
 
           {/* Error Icon */}
           <div className='relative mb-8'>
-            <div className='w-24 h-24 mx-auto bg-red-500/20 rounded-full flex items-center justify-center'>
-              <AlertTriangle className='w-12 h-12 text-red-500' />
+            <div className='w-28 h-28 mx-auto bg-red-500/20 rounded-full flex items-center justify-center'>
+              <AlertTriangle className='w-14 h-14 text-red-500' />
             </div>
           </div>
 
           {/* Error Message */}
-          <h2 className='text-xl font-semibold mb-3 text-red-400'>
+          <h2 className='text-2xl font-semibold mb-3 text-red-400'>
             {validationError.title}
           </h2>
-          <p className='text-gray-400 mb-8'>
+          <p className='text-lg text-gray-400 mb-8'>
             {validationError.message}
           </p>
 
           {/* Guide */}
-          <div className='bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-4 mb-8 text-left'>
-            <p className='text-sm font-medium mb-2 text-white'>올바른 이미지 예시:</p>
-            <ul className='text-sm text-gray-400 space-y-1'>
+          <div className='bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-5 mb-8 text-left'>
+            <p className='text-base font-medium mb-2 text-white'>올바른 이미지 예시:</p>
+            <ul className='text-base text-gray-400 space-y-1.5'>
               <li>• 웹사이트 화면 캡처</li>
               <li>• 모바일 앱 화면 캡처</li>
               <li>• 데스크톱 앱 화면 캡처</li>
@@ -176,21 +176,21 @@ export default function Loading() {
         }}
       />
 
-      <div className='text-center max-w-md relative z-10'>
+      <div className='text-center max-w-lg relative z-10'>
         {/* Logo */}
-        <div className='flex items-center justify-center gap-2 mb-12'>
-          <Eye className='h-8 w-8 text-white' />
-          <span className='text-2xl font-bold text-white'>UX-Ray</span>
+        <div className='flex items-center justify-center gap-3 mb-12'>
+          <Eye className='h-10 w-10 text-white' />
+          <span className='text-3xl font-bold text-white'>UX-Ray</span>
         </div>
 
         {/* Loading Animation - X logo */}
-        <div className='relative mb-8'>
-          <div className='w-32 h-32 mx-auto bg-white/10 backdrop-blur-xl rounded-full flex items-center justify-center shadow-2xl border border-white/20'
+        <div className='relative mb-10'>
+          <div className='w-36 h-36 mx-auto bg-white/10 backdrop-blur-xl rounded-full flex items-center justify-center shadow-2xl border border-white/20'
             style={{
               animation: 'pulse 2s ease-in-out infinite'
             }}
           >
-            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className='w-16 h-16 animate-spin' style={{ animationDuration: '3s' }}>
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className='w-20 h-20 animate-spin' style={{ animationDuration: '3s' }}>
               <line x1="30" y1="30" x2="70" y2="70" stroke="#fff" strokeWidth="3" strokeLinecap="round"/>
               <line x1="70" y1="30" x2="30" y2="70" stroke="#fff" strokeWidth="3" strokeLinecap="round"/>
               <line x1="50" y1="15" x2="50" y2="5" stroke="#fff" strokeWidth="2" strokeLinecap="round" opacity="0.6"/>
@@ -202,19 +202,19 @@ export default function Loading() {
         </div>
 
         {/* Loading Message */}
-        <h2 className='text-xl font-semibold mb-2 text-white'>페르소나들이 사용성 테스트 중입니다</h2>
-        <p className='text-gray-400 mb-8 h-6 transition-all'>
+        <h2 className='text-2xl font-semibold mb-3 text-white'>페르소나들이 사용성 테스트 중입니다</h2>
+        <p className='text-lg text-gray-400 mb-10 h-7 transition-all'>
           {loadingMessages[messageIndex]}
         </p>
 
         {/* Progress Bar */}
-        <div className='w-full bg-white/10 rounded-full h-2 overflow-hidden shadow-inner backdrop-blur-xl'>
+        <div className='w-full bg-white/10 rounded-full h-3 overflow-hidden shadow-inner backdrop-blur-xl'>
           <div
             className='h-full bg-white transition-all duration-300 ease-out rounded-full shadow-sm'
             style={{ width: `${progress}%` }}
           />
         </div>
-        <p className='text-sm text-gray-400 mt-2'>{progress}%</p>
+        <p className='text-lg text-gray-400 mt-3'>{progress}%</p>
       </div>
 
       <style>{`
