@@ -371,12 +371,13 @@ export default function Results() {
                   </Button>
                 )}
               </div>
-              <div className='relative inline-block w-full'>
-                <img
-                  src={results.image}
-                  alt='Analyzed UI'
-                  className='max-h-[70vh] w-auto max-w-full rounded-lg object-contain'
-                />
+              <div className='flex justify-center'>
+                <div className='relative inline-block'>
+                  <img
+                    src={results.image}
+                    alt='Analyzed UI'
+                    className='max-h-[70vh] w-auto rounded-lg'
+                  />
 
                 {/* Elderly Vision Simulator Overlays */}
                 {enableElderlyVision && activePersona && activePersona.name.includes('할머니') && (
@@ -534,6 +535,7 @@ export default function Results() {
                       </div>
                     </div>
                   )}
+                </div>
               </div>
 
               {/* Elderly Vision Info */}
