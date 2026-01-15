@@ -129,6 +129,7 @@ const devices = [
 const demoImages = [
   { id: "daum", path: "/demo_daum.png", name: "다음", description: "데모 • 모바일 앱" },
   { id: "naver", path: "/demo_naver.png", name: "네이버", description: "데모 • 모바일 앱" },
+  { id: "youtube", path: "/demo_youtube.jpg", name: "유튜브", description: "데모 • 모바일 앱" },
 ]
 
 export default function Analyze() {
@@ -284,7 +285,7 @@ export default function Analyze() {
                     <div className="text-center mb-3">
                       <p className="text-sm text-muted-foreground">또는 데모 이미지로 빠르게 시작하기</p>
                     </div>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-3 gap-3">
                       {demoImages.map((demo) => (
                         <button
                           key={demo.id}
