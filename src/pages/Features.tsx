@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 import { Link } from "react-router-dom"
-import { Eye, Users, Target, ArrowLeft, ArrowRight } from "lucide-react"
+import { Eye, Users, Target, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 export default function Features() {

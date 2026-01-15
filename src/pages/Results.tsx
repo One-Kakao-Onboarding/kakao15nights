@@ -15,6 +15,8 @@ export default function Results() {
   const pdfReportRef = useRef<HTMLDivElement>(null)
   const [isExporting, setIsExporting] = useState(false)
   const [enableElderlyVision, setEnableElderlyVision] = useState(false)
+  const [enableBlindSpot, setEnableBlindSpot] = useState(false)
+  const [enableLocalBlocker, setEnableLocalBlocker] = useState(false)
 
   useEffect(() => {
     if (!results) {
@@ -35,6 +37,24 @@ export default function Results() {
       }
     }
   }, [enableElderlyVision, results])
+
+  useEffect(() => {
+    if (enableBlindSpot) {
+      const adhdIndex = results?.personas.findIndex(p => p.name.includes('이혁준') || p.name.includes('대리'))
+      if (adhdIndex !== undefined && adhdIndex !== -1) {
+        setActivePersonaIndex(adhdIndex)
+      }
+    }
+  }, [enableBlindSpot, results])
+
+  useEffect(() => {
+    if (enableLocalBlocker) {
+      const foreignerIndex = results?.personas.findIndex(p => p.name.includes('Brian') || p.name.includes('미국인'))
+      if (foreignerIndex !== undefined && foreignerIndex !== -1) {
+        setActivePersonaIndex(foreignerIndex)
+      }
+    }
+  }, [enableLocalBlocker, results])
 
   const handleNewAnalysis = () => {
     reset()
@@ -227,8 +247,56 @@ export default function Results() {
                   </div>
                 )}
 
+                {/* Blind Spot Blackout Overlays */}
+                {enableBlindSpot && activePersona && (activePersona.name.includes('이혁준') || activePersona.name.includes('대리')) && (
+                  <div className="absolute inset-0 pointer-events-none rounded-lg overflow-hidden">
+                    {activePersona.coordinates.map((coord, idx) => (
+                      <div
+                        key={`blackout-${idx}`}
+                        className="absolute transition-all duration-500 flex items-center justify-center"
+                        style={{
+                          top: `${coord.y * 100}%`,
+                          left: `${coord.x * 100}%`,
+                          width: `${coord.width * 100}%`,
+                          height: `${coord.height * 100}%`,
+                          backgroundColor: 'rgba(0, 0, 0, 0.95)',
+                          borderRadius: '2px',
+                        }}
+                      >
+                        <span className="text-white/30 text-xs font-medium">SKIP</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Local Blocker Warning Overlays */}
+                {enableLocalBlocker && activePersona && (activePersona.name.includes('Brian') || activePersona.name.includes('미국인')) && (
+                  <div className="absolute inset-0 pointer-events-none rounded-lg overflow-hidden">
+                    {activePersona.coordinates.map((coord, idx) => (
+                      <div
+                        key={`blocker-${idx}`}
+                        className="absolute transition-all duration-300 flex items-center justify-center"
+                        style={{
+                          top: `${coord.y * 100}%`,
+                          left: `${coord.x * 100}%`,
+                          width: `${coord.width * 100}%`,
+                          height: `${coord.height * 100}%`,
+                          backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                          border: '2px dashed #ef4444',
+                          borderRadius: '4px',
+                        }}
+                      >
+                        <div className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded shadow-lg flex items-center gap-1">
+                          <span>⚠️</span>
+                          <span>LOCAL ONLY</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
                 {/* Red Pen Overlay */}
-                {activeCoordinate && !enableElderlyVision && (
+                {activeCoordinate && !enableElderlyVision && !enableBlindSpot && !enableLocalBlocker && (
                   <div
                     className="absolute border-2 border-red-500 bg-red-500/10 rounded transition-all duration-300"
                     style={{
@@ -258,8 +326,34 @@ export default function Results() {
                 </div>
               )}
 
+              {/* Blind Spot Info */}
+              {enableBlindSpot && activePersona && (activePersona.name.includes('이혁준') || activePersona.name.includes('대리')) && (
+                <div className="mt-4 p-3 bg-gray-900 dark:bg-gray-950 border border-gray-700 rounded-lg">
+                  <p className="text-sm text-gray-100 flex items-center gap-2">
+                    <span className="text-lg">🙈</span>
+                    <span>
+                      <strong>블라인드 스팟 활성화:</strong> 검은 영역은 ADHD 성향의 사용자가 읽지 않고 스킵한 텍스트입니다.
+                      당신이 심혈을 기울인 카피가 실제로는 전달되지 않았을 수 있습니다.
+                    </span>
+                  </p>
+                </div>
+              )}
+
+              {/* Local Blocker Info */}
+              {enableLocalBlocker && activePersona && (activePersona.name.includes('Brian') || activePersona.name.includes('미국인')) && (
+                <div className="mt-4 p-3 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg">
+                  <p className="text-sm text-red-900 dark:text-red-100 flex items-center gap-2">
+                    <span className="text-lg">🌏</span>
+                    <span>
+                      <strong>로컬 블로커 활성화:</strong> 표시된 영역은 외국인 사용자가 이해하기 어렵거나 수행할 수 없는 절차입니다.
+                      한국어 전용 콘텐츠, 현지 결제 시스템, 미번역 UI 등이 포함됩니다.
+                    </span>
+                  </p>
+                </div>
+              )}
+
               {/* Feedback Navigation */}
-              {!enableElderlyVision && (
+              {!enableElderlyVision && !enableBlindSpot && !enableLocalBlocker && (
                 <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
                   <Button
                     variant="outline"
@@ -342,9 +436,55 @@ export default function Results() {
                       variant={enableElderlyVision ? "default" : "outline"}
                       size="sm"
                       className="w-full gap-2"
-                      onClick={() => setEnableElderlyVision(!enableElderlyVision)}
+                      onClick={() => {
+                        setEnableElderlyVision(!enableElderlyVision)
+                        setEnableBlindSpot(false)
+                        setEnableLocalBlocker(false)
+                      }}
                     >
-                      👵 노안 시뮬레이터 {enableElderlyVision ? 'ON' : 'OFF'}
+                      👵 노안 시뮬레이터 {enableElderlyVision ? 'OFF' : 'ON'}
+                    </Button>
+                  </div>
+                )}
+
+                {/* Blind Spot Simulator Toggle - Only for ADHD */}
+                {(activePersona.name.includes('이혁준') || activePersona.name.includes('대리')) && (
+                  <div className="mb-6">
+                    <Button
+                      variant={enableBlindSpot ? "default" : "outline"}
+                      size="sm"
+                      className={cn(
+                        "w-full gap-2",
+                        enableBlindSpot && "bg-gray-900 hover:bg-gray-800 text-white"
+                      )}
+                      onClick={() => {
+                        setEnableBlindSpot(!enableBlindSpot)
+                        setEnableElderlyVision(false)
+                        setEnableLocalBlocker(false)
+                      }}
+                    >
+                      📱 블라인드 스팟 {enableBlindSpot ? 'OFF' : 'ON'}
+                    </Button>
+                  </div>
+                )}
+
+                {/* Local Blocker Toggle - Only for Foreigner */}
+                {(activePersona.name.includes('Brian') || activePersona.name.includes('미국인')) && (
+                  <div className="mb-6">
+                    <Button
+                      variant={enableLocalBlocker ? "default" : "outline"}
+                      size="sm"
+                      className={cn(
+                        "w-full gap-2",
+                        enableLocalBlocker && "bg-red-500 hover:bg-red-600 text-white"
+                      )}
+                      onClick={() => {
+                        setEnableLocalBlocker(!enableLocalBlocker)
+                        setEnableElderlyVision(false)
+                        setEnableBlindSpot(false)
+                      }}
+                    >
+                      🌏 로컬 블로커 {enableLocalBlocker ? 'OFF' : 'ON'}
                     </Button>
                   </div>
                 )}

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-import { Eye, ArrowRight, Upload, Users, FileCheck } from "lucide-react"
+import { Eye, ArrowRight, Upload } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 export default function HowItWorks() {
