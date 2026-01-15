@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import ScrollToTop from './components/ScrollToTop'
 import Home from './pages/Home'
 import Features from './pages/Features'
@@ -23,6 +23,7 @@ function App() {
       <Route path="/analyze" element={<Analyze />} />
       <Route path="/analyze/loading" element={<Loading />} />
       <Route path="/analyze/results" element={<Results />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
     </>
   )
