@@ -193,33 +193,11 @@ export default function Results() {
         </div>
       </header>
 
-      <main className="container mx-auto py-8 px-4 bg-background">
-        {/* Overall Score */}
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold mb-4">UX 진단 결과</h1>
-          <div className="inline-flex items-center gap-4 bg-card border border-border rounded-xl p-6">
-            <div>
-              <p className="text-sm text-muted-foreground mb-1">종합 점수</p>
-              <p className={cn("text-5xl font-bold", getScoreColor(results.overallScore))}>{results.overallScore}</p>
-            </div>
-            <div className="h-16 w-px bg-border" />
-            <div className="text-left">
-              <p className="text-sm text-muted-foreground mb-1">분석 페르소나</p>
-              <div className="flex gap-1">
-                {results.personas.map((p, i) => (
-                  <span key={i} className="text-2xl" title={p.name}>
-                    {p.emoji}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="grid lg:grid-cols-5 gap-8">
+      <main className="container mx-auto py-4 px-4 bg-background">
+        <div className="grid lg:grid-cols-2 gap-6">
           {/* Left: Image with Red Pen */}
-          <div className="lg:col-span-3">
-            <div className="bg-card border border-border rounded-xl p-4">
+          <div>
+            <div className="bg-card border border-border rounded-xl p-4 lg:sticky lg:top-20 max-h-[calc(100vh-6rem)] overflow-auto">
               <div className="relative inline-block w-full">
                 <img
                   src={results.image}
@@ -382,56 +360,90 @@ export default function Results() {
           </div>
 
           {/* Right: Feedback Panel */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="space-y-4">
+            {/* Overall Score - Emphasized */}
+            <div className="bg-gradient-to-br from-primary/15 via-primary/10 to-primary/5 border-2 border-primary/30 rounded-xl p-5 shadow-lg">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">종합 UX 점수</p>
+                  <div className="flex items-baseline gap-2">
+                    <p className={cn("text-5xl font-bold tracking-tight", getScoreColor(results.overallScore))}>{results.overallScore}</p>
+                    <span className="text-lg text-muted-foreground font-medium">/ 100</span>
+                  </div>
+                  <div className="w-32 bg-muted rounded-full h-1.5 mt-2">
+                    <div
+                      className={cn("h-full rounded-full transition-all", getScoreBg(results.overallScore))}
+                      style={{ width: `${results.overallScore}%` }}
+                    />
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-muted-foreground mb-2">분석 완료</p>
+                  <div className="flex gap-1.5">
+                    {results.personas.map((p, i) => (
+                      <span key={i} className="text-2xl" title={p.name}>
+                        {p.emoji}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Persona Tabs */}
-            <div className="flex gap-2 overflow-x-auto pb-2">
+            <div className="grid grid-cols-2 gap-2">
               {results.personas.map((persona, index) => (
                 <button
                   key={index}
                   onClick={() => setActivePersonaIndex(index)}
                   className={cn(
-                    "flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all whitespace-nowrap",
+                    "flex items-center justify-between px-3 py-2.5 rounded-lg border-2 transition-all",
                     activePersonaIndex === index
-                      ? "border-primary bg-primary/5"
+                      ? "border-primary bg-primary/5 shadow-sm"
                       : "border-border hover:border-primary/50",
                   )}
                 >
-                  <span className="text-xl">{persona.emoji}</span>
-                  <span className="text-sm font-medium">{persona.name}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">{persona.emoji}</span>
+                    <span className="text-sm font-medium truncate">{persona.name.split(' ')[0]}</span>
+                  </div>
+                  <span className={cn("text-lg font-bold tabular-nums", getScoreColor(persona.score))}>
+                    {persona.score}
+                  </span>
                 </button>
               ))}
             </div>
 
             {/* Active Persona Card */}
             {activePersona && (
-              <div className="bg-card border border-border rounded-xl p-6">
+              <div className="bg-card border border-border rounded-xl p-5">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <span className="text-4xl">{activePersona.emoji}</span>
                     <div>
                       <h3 className="font-bold text-lg">{activePersona.name}</h3>
-                      <p className="text-sm text-muted-foreground">{activePersona.feedback.length}개의 문제 발견</p>
+                      <p className="text-xs text-muted-foreground">{activePersona.feedback.length}개의 문제 발견</p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm text-muted-foreground">점수</p>
-                    <p className={cn("text-3xl font-bold", getScoreColor(activePersona.score))}>
+                  <div className="text-right bg-gradient-to-br from-primary/5 to-transparent px-4 py-2 rounded-lg border border-primary/10">
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-0.5">점수</p>
+                    <p className={cn("text-3xl font-bold tabular-nums", getScoreColor(activePersona.score))}>
                       {activePersona.score}
                     </p>
                   </div>
                 </div>
 
                 {/* Score Bar */}
-                <div className="w-full bg-muted rounded-full h-2 mb-6">
+                <div className="w-full bg-muted rounded-full h-2 mb-4 shadow-inner">
                   <div
-                    className={cn("h-full rounded-full transition-all", getScoreBg(activePersona.score))}
+                    className={cn("h-full rounded-full transition-all shadow-sm", getScoreBg(activePersona.score))}
                     style={{ width: `${activePersona.score}%` }}
                   />
                 </div>
 
                 {/* Elderly Vision Simulator Toggle - Only for Grandmother */}
                 {activePersona.name.includes('할머니') && (
-                  <div className="mb-6">
+                  <div className="mb-4">
                     <Button
                       variant={enableElderlyVision ? "default" : "outline"}
                       size="sm"
@@ -449,7 +461,7 @@ export default function Results() {
 
                 {/* Blind Spot Simulator Toggle - Only for ADHD */}
                 {(activePersona.name.includes('이혁준') || activePersona.name.includes('대리')) && (
-                  <div className="mb-6">
+                  <div className="mb-4">
                     <Button
                       variant={enableBlindSpot ? "default" : "outline"}
                       size="sm"
@@ -470,7 +482,7 @@ export default function Results() {
 
                 {/* Local Blocker Toggle - Only for Foreigner */}
                 {(activePersona.name.includes('Brian') || activePersona.name.includes('미국인')) && (
-                  <div className="mb-6">
+                  <div className="mb-4">
                     <Button
                       variant={enableLocalBlocker ? "default" : "outline"}
                       size="sm"
@@ -490,29 +502,29 @@ export default function Results() {
                 )}
 
                 {/* Feedback List */}
-                <div className="space-y-3">
-                  <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">발견된 문제</h4>
+                <div className="space-y-2">
+                  <h4 className="font-semibold text-xs text-muted-foreground uppercase tracking-wide mb-2">발견된 문제</h4>
                   {activePersona.feedback.map((feedback, index) => (
                     <button
                       key={index}
                       onClick={() => setActiveFeedbackIndex(index)}
                       className={cn(
-                        "w-full text-left p-4 rounded-lg border transition-all",
+                        "w-full text-left p-3 rounded-lg border transition-all",
                         activeFeedbackIndex === index
                           ? "border-red-500 bg-red-50 dark:bg-red-500/10"
                           : "border-border hover:border-red-300",
                       )}
                     >
-                      <div className="flex gap-3">
+                      <div className="flex gap-2.5">
                         <span
                           className={cn(
-                            "flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold",
+                            "flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold",
                             activeFeedbackIndex === index ? "bg-red-500 text-white" : "bg-muted text-muted-foreground",
                           )}
                         >
                           {index + 1}
                         </span>
-                        <p className="text-sm">{feedback}</p>
+                        <p className="text-sm leading-relaxed">{feedback}</p>
                       </div>
                     </button>
                   ))}
@@ -521,8 +533,8 @@ export default function Results() {
             )}
 
             {/* Action Buttons */}
-            <div className="flex gap-3">
-              <Button variant="outline" className="flex-1 gap-2 bg-transparent" onClick={handleNewAnalysis}>
+            <div>
+              <Button variant="outline" className="w-full gap-2 bg-transparent" onClick={handleNewAnalysis}>
                 <ArrowLeft className="h-4 w-4" />
                 다시 진단하기
               </Button>
