@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-import { ArrowRight, Eye, Zap } from "lucide-react"
+import { ArrowRight, Eye, Zap, Heart, Users, Globe, Shield } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 export default function Home() {
@@ -79,6 +79,95 @@ export default function Home() {
             <div className="text-center">
               <div className="text-3xl md:text-4xl font-bold text-primary">무료</div>
               <div className="text-sm text-muted-foreground mt-1">시작 비용</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Social Impact Section */}
+      <section className="container mx-auto py-24 px-4">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-500/10 text-red-600 dark:text-red-400 text-sm font-medium mb-4">
+              <Heart className="h-4 w-4" />
+              사회적 가치
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              디지털 포용, 모두를 위한 UX
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              UX-Ray는 단순한 진단 도구가 아닙니다.
+              디지털 소외 계층을 포함한 모든 사람이 편리하게 사용할 수 있는 서비스를 만들어갑니다.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6 mb-12">
+            <div className="bg-card border border-border rounded-xl p-8">
+              <div className="h-12 w-12 rounded-lg bg-blue-500/10 flex items-center justify-center mb-4">
+                <Users className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+              </div>
+              <h3 className="font-bold text-xl mb-3">1,200만 명의 디지털 소외 계층</h3>
+              <p className="text-muted-foreground leading-relaxed">
+                대한민국 65세 이상 고령 인구는 약 <strong className="text-foreground">900만 명</strong>,
+                장애인 등록 인구는 <strong className="text-foreground">약 264만 명</strong>.
+                이들 중 상당수가 작은 글씨, 복잡한 UI, 불친절한 네비게이션으로 인해 디지털 서비스 이용에 어려움을 겪고 있습니다.
+              </p>
+            </div>
+
+            <div className="bg-card border border-border rounded-xl p-8">
+              <div className="h-12 w-12 rounded-lg bg-purple-500/10 flex items-center justify-center mb-4">
+                <Globe className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+              </div>
+              <h3 className="font-bold text-xl mb-3">글로벌 접근성 기준 충족</h3>
+              <p className="text-muted-foreground leading-relaxed">
+                한국 웹사이트의 <strong className="text-foreground">접근성 준수율은 약 30%</strong>에 불과합니다.
+                UX-Ray는 WCAG(웹 접근성 가이드라인)과 한국형 웹 콘텐츠 접근성 지침(KWCAG)을 기반으로
+                외국인, 장애인도 사용 가능한 서비스를 만듭니다.
+              </p>
+            </div>
+
+            <div className="bg-card border border-border rounded-xl p-8">
+              <div className="h-12 w-12 rounded-lg bg-green-500/10 flex items-center justify-center mb-4">
+                <Shield className="h-6 w-6 text-green-600 dark:text-green-400" />
+              </div>
+              <h3 className="font-bold text-xl mb-3">카카오 생태계 접근성 강화</h3>
+              <p className="text-muted-foreground leading-relaxed">
+                카카오톡, 카카오페이, 다음 등 <strong className="text-foreground">카카오 그룹 서비스</strong>의
+                UX를 개선하여 디지털 취약 계층의 진입 장벽을 낮춥니다.
+                더 많은 사람이 카카오 생태계를 편리하게 이용할 수 있도록 기여합니다.
+              </p>
+            </div>
+
+            <div className="bg-card border border-border rounded-xl p-8">
+              <div className="h-12 w-12 rounded-lg bg-orange-500/10 flex items-center justify-center mb-4">
+                <Heart className="h-6 w-6 text-orange-600 dark:text-orange-400" />
+              </div>
+              <h3 className="font-bold text-xl mb-3">실질적인 사회 기여</h3>
+              <p className="text-muted-foreground leading-relaxed">
+                <strong className="text-foreground">접근성 1% 개선</strong>만으로도
+                수십만 명이 서비스를 더 쉽게 사용할 수 있습니다.
+                UX-Ray는 디자이너와 기획자가 쉽게 접근성 문제를 발견하고 개선할 수 있도록 도와,
+                디지털 권리를 보장하는 사회를 만듭니다.
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-r from-primary/10 via-red-500/10 to-orange-500/10 border border-border rounded-xl p-8 md:p-10">
+            <div className="max-w-2xl mx-auto text-center">
+              <h3 className="text-2xl font-bold mb-4">
+                "좋은 UX는 특권이 아닌 권리입니다"
+              </h3>
+              <p className="text-muted-foreground mb-6 leading-relaxed">
+                UX-Ray를 통해 하나의 서비스가 개선될 때마다,
+                디지털 소외 계층이 일상에서 느끼는 불편함이 하나씩 사라집니다.
+                당신의 디자인이 누군가의 삶을 바꿀 수 있습니다.
+              </p>
+              <Link to="/analyze">
+                <Button size="lg" className="gap-2">
+                  지금 접근성 진단 시작하기
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
