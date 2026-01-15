@@ -23,7 +23,7 @@ pnpm preview  # Preview production build
 - **UI Components:** shadcn/ui (new-york style)
 - **Routing:** React Router DOM v7
 - **State:** Zustand
-- **AI:** Google Generative AI SDK (`@google/genai`) with Gemini 2.0 Flash
+- **AI:** Google Generative AI SDK (`@google/genai`) with Gemini 3 Flash Preview
 
 ## Architecture
 
@@ -60,17 +60,26 @@ src/
 5. Results page renders feedback with coordinate-based overlays
 
 ### AI Integration (`src/lib/gemini.ts`)
-- Uses `@google/genai` package with `gemini-2.0-flash` model
+- Uses `@google/genai` package with `gemini-3-flash-preview` model
 - Each persona has a specific prompt in `personaPrompts` object
-- AI returns JSON with `feedback`, `coordinates` (for Red Pen), and `score`
-- Coordinates format: `[ymin, xmin, ymax, xmax]` for bounding boxes
-- Fallback mock data provided if API fails
+- AI returns JSON with `feedback[]`, `coordinates[]`, and `score` (0-100)
+- Coordinates use normalized values (0-1): `{x, y, width, height}`
+  - `x`: 0 (left edge) to 1 (right edge)
+  - `y`: 0 (top edge) to 1 (bottom edge)
+  - Feedback and coordinates arrays are 1:1 mapped
+- Fallback mock data returned if API fails (see `createFallbackResult`)
+
+### Red Pen Overlay System (`src/pages/Results.tsx`)
+- Coordinates rendered as absolute-positioned divs over the image
+- Percentage-based positioning: `top: y*100%`, `left: x*100%`, etc.
+- Active feedback item highlights corresponding coordinate box
+- Navigation between feedback items updates the visible overlay
 
 ### Personas
-- `grandmother` - 김복심 (75세): Focus on readability, trust, cognitive load
-- `adhd` - 이혁준 (32세): Focus on efficiency, aesthetics, quick scanning
-- `one-hand` - 김민석 (25세): Focus on thumb reachability, touch targets
-- `foreigner` - Brian (40세): Focus on localization, translation, global standards
+- `grandmother` - 디지털 취약계층 김복심 할머니 (75세): Focus on readability, trust, cognitive load
+- `adhd` - 참을성이 부족한 이혁준 대리 (32세): Focus on efficiency, aesthetics, quick scanning
+- `one-hand` - 한 손 조작 사용자 김민석 (25세): Focus on thumb reachability, touch targets
+- `foreigner` - 미국인 Brian (40세): Focus on localization, translation, global standards
 
 ## Environment Variables
 
