@@ -2,6 +2,8 @@
 
 > AI 페르소나가 당신의 UI를 진단하고, 놓치기 쉬운 접근성 문제를 시각적으로 보여드립니다.
 
+🌐 **[데모 체험하기](https://funny-treacle-9fdf0e.netlify.app/)**
+
 ## 💡 프로젝트 소개
 
 UX-Ray는 사용자 테스트 없이도 다양한 사용자 관점에서 UI/UX 문제점을 발견할 수 있는 AI 기반 진단 솔루션입니다.
@@ -40,7 +42,3 @@ React + TypeScript 기반의 웹 애플리케이션이며, Google Gemini AI를 �
 - ✅ **고유 능력 시뮬레이터**: 각 페르소나별 특수 시각화 기능
 - ✅ **PDF 리포트 생성**: 분석 결과를 PDF로 저장
 - ✅ **데모 이미지 제공**: 빠른 체험을 위한 샘플 이미지
-
----
-
-**Made with ❤️ for Digital Inclusion**
